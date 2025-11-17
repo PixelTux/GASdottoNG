@@ -22,6 +22,7 @@ return array(
 		'name' => 'Aggregazione',
 	),
 	'auth' => array(
+        'access' => 'Accesso',
 		'accept_privacy' => 'Ho letto e accetto l\'<a href=":link" target="_blank">Informativa sulla Privacy</a>.',
 		'username' => 'Username',
 		'help' => array(

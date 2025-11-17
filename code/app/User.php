@@ -106,7 +106,7 @@ class User extends Authenticatable
             if (! $ret) {
                 $ret = (object) [
                     'name' => __('texts.generic.unspecified'),
-                    'valid_config' => function ($target) {
+                    'valid_config' => function () {
                         return true;
                     },
                 ];
@@ -221,34 +221,6 @@ class User extends Authenticatable
         }
     }
 
-    /*
-        Genera la notifica relativa ad altre prenotazioni (oltre a quella
-        dell'aggregato specificato) che devono essere ritirate dall'utente nel
-        corso della giornata. Viene aggiunta nel pannello delle consegne e nel
-        Dettaglio Consegne PDF
-    */
-    public function morePendingBookings($aggregate)
-    {
-        $other_bookings = $this->bookings()->where('status', 'pending')->whereHas('order', function ($query) use ($aggregate) {
-            $query->where('aggregate_id', '!=', $aggregate->id)->where('shipping', $aggregate->shipping);
-        })->get();
-
-        if ($other_bookings->isEmpty() === false) {
-            $notice = __('texts.user.pending_deliveries');
-            $notice .= '<ul>';
-
-            foreach ($other_bookings as $ob) {
-                $notice .= '<li>' . $ob->order->printableName() . '</li>';
-            }
-
-            $notice .= '</ul>';
-
-            return $notice;
-        }
-
-        return null;
-    }
-
     public function anonymizeUserData()
     {
         /*
@@ -285,7 +257,7 @@ class User extends Authenticatable
 
     /************************************************************** InCircles */
 
-    public function eligibleGroups()
+    public function eligibleGroups(): Collection
     {
         if ($this->isFriend()) {
             return new Collection();

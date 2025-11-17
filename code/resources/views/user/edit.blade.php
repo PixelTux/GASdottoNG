@@ -1,4 +1,4 @@
-<?php
+@php
 
 if (isset($readonly) && $readonly) {
     $admin_editable = $editable = $personal_details = false;
@@ -11,11 +11,11 @@ else {
 }
 
 $display_page = $display_page ?? false;
-$has_accounting = ($admin_editable || $currentuser->id == $user->id || $currentuser->can('movements.admin', $currentgas) || $currentuser->can('movements.view', $currentgas)) && ($user->isFriend() == false && someoneCan('movements.admin', $user->gas));
+$has_accounting = ($admin_editable || $currentuser->id == $user->id || $currentuser->can('movements.admin', $currentgas) || $currentuser->can('movements.view', $currentgas)) && (!$user->isFriend() && someoneCan('movements.admin', $user->gas));
 $has_stats = $has_accounting;
 $has_bookings = ($currentuser->id == $user->id);
-$has_friends = $editable && $user->can('users.subusers', $user->gas);
-$has_notifications = $user->isFriend() == false && $editable && ($currentgas->getConfig('notify_all_new_orders') == false);
+$has_friends = ($admin_editable || $currentuser->id == $user->id) && $user->can('users.subusers', $user->gas);
+$has_notifications = $editable && !$user->isFriend() && !$currentgas->getConfig('notify_all_new_orders');
 
 $friend_admin_buttons = [];
 if ($user->isFriend() && $admin_editable) {
@@ -28,16 +28,16 @@ if ($user->isFriend() && $admin_editable) {
     ];
 }
 
-?>
+$groups = $user->eligibleGroups();
+
+@endphp
 
 <x-larastrap::tabs>
     <x-larastrap::tabpane :id="sprintf('profile-%s', sanitizeId($user->id))" label="{{ __('texts.user.personal_data') }}" active="true" classes="mb-2" icon="bi-person">
         @if($admin_editable)
             @if($user->pending)
                 <div class="alert alert-warning mb-3 d-flex flex-column flex-md-row align-items-center justify-content-between">
-                    <div class="d-inline-block">
-                        {{ __('texts.user.help.waiting_approval') }}
-                    </div>
+                    <div class="d-inline-block">{{ __('texts.user.help.waiting_approval') }}</div>
 
                     <div>
                         <x-larastrap::iform :action="route('users.revisioned', $user->id)" :buttons="[['tlabel' => 'user.approve', 'color' => 'success']]" classes="float-end ms-2">
@@ -54,103 +54,118 @@ if ($user->isFriend() && $admin_editable) {
             @endif
         @endif
 
-        <x-larastrap::mform :obj="$user" method="PUT" :action="route('users.update', $user->id)" :classes="$display_page ? 'inner-form' : ''" :nodelete="$display_page || $user->isFriend() == false" :nosave="$readonly" :other_buttons="$friend_admin_buttons">
+        <x-larastrap::mform :obj="$user" method="PUT" :action="route('users.update', $user->id)" :classes="$display_page ? 'inner-form' : ''" :nodelete="$display_page || !$user->isFriend()" :nosave="!$editable" :other_buttons="$friend_admin_buttons">
             <div class="row">
                 <div class="col-12 col-md-6">
-                    @if($user->isFriend() == false)
+                    @if(!$user->isFriend())
+                        <x-ls::card header="auth.access">
+                            <x-larastrap::username name="username" tlabel="auth.username" :required="$editable" :readonly="!$editable" />
+
+                            @if($admin_editable || $personal_details)
+                                @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
+                            @endif
+
+                            @if($admin_editable)
+                                @include('commons.statusfield', ['target' => $user])
+                            @endif
+                        </x-ls::card>
+
                         @if($editable)
-                            <x-larastrap::username name="username" tlabel="auth.username" required />
-                            <x-larastrap::text name="firstname" tlabel="user.firstname" />
-                            <x-larastrap::text name="lastname" tlabel="user.lastname" />
-                            @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
-                            <x-larastrap::text name="birthplace" tlabel="user.birthplace" />
-                            <x-larastrap::datepicker name="birthday" tlabel="user.birthdate" />
-                            <x-larastrap::text name="taxcode" tlabel="user.taxcode" />
-                            <x-larastrap::text name="family_members" tlabel="user.family_members" />
+                            <x-ls::card header="user.personal_data">
+                                <x-larastrap::text name="firstname" tlabel="user.firstname" />
+                                <x-larastrap::text name="lastname" tlabel="user.lastname" />
+                                <x-larastrap::text name="birthplace" tlabel="user.birthplace" />
+                                <x-larastrap::datepicker name="birthday" tlabel="user.birthdate" />
+                                <x-larastrap::text name="taxcode" tlabel="user.taxcode" />
+                                <x-larastrap::text name="family_members" tlabel="user.family_members" />
+
+                                @if($editable)
+                                    @include('commons.imagefield', ['obj' => $user, 'name' => 'picture', 'label' => __('texts.generic.photo'), 'valuefrom' => 'picture_url'])
+                                @else
+                                    @include('commons.staticimagefield', ['obj' => $user, 'label' => __('texts.generic.photo'), 'valuefrom' => 'picture_url'])
+                                @endif
+                            </x-ls::card>
+
                             @include('commons.contactswidget', ['obj' => $user])
                         @else
-                            <x-larastrap::username name="username" tlabel="auth.username" readonly disabled />
-                            <x-larastrap::text name="firstname" tlabel="user.firstname" readonly disabled />
-                            <x-larastrap::text name="lastname" tlabel="user.lastname" readonly disabled />
+                            <x-ls::card header="user.personal_data" readonly>
+                                <x-larastrap::text name="firstname" tlabel="user.firstname" />
+                                <x-larastrap::text name="lastname" tlabel="user.lastname" />
 
-                            @if($personal_details)
-                                @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
-                                <x-larastrap::datepicker name="birthday" tlabel="user.birthdate" readonly disabled />
-                                <x-larastrap::text name="taxcode" tlabel="user.taxcode" readonly disabled />
-                            @endif
+                                @if($personal_details)
+                                    <x-larastrap::datepicker name="birthday" tlabel="user.birthdate" />
+                                    <x-larastrap::text name="taxcode" tlabel="user.taxcode" />
+                                @endif
+                            </x-ls::card>
 
                             @include('commons.staticcontactswidget', ['obj' => $user])
                         @endif
                     @else
-                        @if($editable)
+                        {{--
+                            Qui assumo che il pannello di amministrazione degli
+                            amici sia sempre e solo raggiungibile da utenti
+                            autorizzati a modificarli (l'utente principale, o un
+                            amministratore, o l'amico stesso)
+                        --}}
+
+                        <x-ls::card header="auth.access">
                             <x-larastrap::username name="username" tlabel="auth.username" />
+                            @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
+                        </x-ls::card>
+
+                        <x-ls::card header="user.personal_data">
                             <x-larastrap::text name="firstname" tlabel="user.firstname" />
                             <x-larastrap::text name="lastname" tlabel="user.lastname" />
-                            @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
-                            @include('commons.contactswidget', ['obj' => $user])
-                        @else
-                            <x-larastrap::username name="username" tlabel="auth.username" readonly disabled />
-                            <x-larastrap::text name="firstname" tlabel="user.firstname" readonly disabled />
-                            <x-larastrap::text name="lastname" tlabel="user.lastname" readonly disabled />
+                        </x-ls::card>
 
-                            @if($personal_details)
-                                @include('commons.passwordfield', ['obj' => $user, 'name' => 'password', 'label' => __('texts.auth.password')])
-                            @endif
-
-                            @include('commons.staticcontactswidget', ['obj' => $user])
-                        @endif
+                        @include('commons.contactswidget', ['obj' => $user])
                     @endif
                 </div>
                 <div class="col-12 col-md-6">
-                    @if($user->isFriend() == false)
-                        @if($editable)
-                            @include('commons.imagefield', ['obj' => $user, 'name' => 'picture', 'label' => __('texts.generic.photo'), 'valuefrom' => 'picture_url'])
-                        @else
-                            @include('commons.staticimagefield', ['obj' => $user, 'label' => __('texts.generic.photo'), 'valuefrom' => 'picture_url'])
-                        @endif
+                    @if(!$user->isFriend())
+                        <x-ls::card header="generic.gas">
+                            <x-larastrap::datepicker name="member_since" tlabel="user.member_since" :readonly="!$admin_editable" />
+                            <x-larastrap::text name="card_number" tlabel="user.card_number" :readonly="!$admin_editable" />
 
-                        @if($admin_editable)
-                            <x-larastrap::datepicker name="member_since" tlabel="user.member_since" />
-                            <x-larastrap::text name="card_number" tlabel="user.card_number" />
-                        @else
-                            <x-larastrap::datepicker name="member_since" tlabel="user.member_since" readonly disabled />
-                            <x-larastrap::text name="card_number" tlabel="user.card_number" readonly disabled />
-                        @endif
+                            @if($editable || $personal_details)
+                                @include('user.movements', ['editable' => $admin_editable])
+                                <x-larastrap::datepicker name="last_login" tlabel="user.last_login" readonly />
+                                <x-larastrap::datepicker name="last_booking" tlabel="user.last_booking" readonly />
+                            @endif
 
-                        @if($editable || $personal_details)
-                            @include('user.movements', ['editable' => $admin_editable])
+                            @if($admin_editable)
+                                <x-larastrap::radios name="payment_method_id" tlabel="user.payment_method" :options="paymentsSimple()" />
 
-                            <x-larastrap::datepicker name="last_login" tlabel="user.last_login" readonly disabled />
-                            <x-larastrap::datepicker name="last_booking" tlabel="user.last_booking" readonly disabled />
-
-                            @foreach($user->eligibleGroups() as $ug)
-                                @if($admin_editable || $ug->user_selectable)
-                                    <x-larastrap::hidden name="groups[]" :value="$ug->id" />
-                                    <x-dynamic-component :component="sprintf('larastrap::%s', $ug->cardinality == 'single' ? 'radiolist-model' : 'checklist-model')" :params="['name' => 'circles', 'npostfix' => sprintf('__%s__%s[]', sanitizeId($user->id), sanitizeId($ug->id)), 'label' => $ug->name, 'options' => $ug->circles]" />
-                                @else
-                                    <x-dynamic-component :component="sprintf('larastrap::%s', $ug->cardinality == 'single' ? 'radiolist-model' : 'checklist-model')" :params="['name' => 'circles', 'npostfix' => sprintf('__%s__%s[]', sanitizeId($user->id), sanitizeId($ug->id)), 'label' => $ug->name, 'options' => $ug->circles]" disabled readonly />
-                                @endif
-                            @endforeach
-                        @endif
-
-                        @if($admin_editable)
-                            @include('commons.statusfield', ['target' => $user])
-                            <x-larastrap::radios name="payment_method_id" tlabel="user.payment_method" :options="paymentsSimple()" />
-
-                            @if($user->gas->hasFeature('rid'))
-                                <x-larastrap::field tlabel="user.sepa.intro" tpophelp="user.sepa.help">
+                                @if($user->gas->hasFeature('rid'))
+                                    <x-larastrap::field tlabel="user.sepa.intro" tpophelp="user.sepa.help">
                                     <x-larastrap::text name="rid->iban" tlabel="generic.iban" squeeze="true" :value="$user->rid['iban'] ?? ''" tplaceholder="generic.iban" />
                                     <x-larastrap::text name="rid->id" tlabel="user.sepa.identifier" squeeze="true" :value="$user->rid['id'] ?? ''" tplaceholder="user.sepa.identifier" />
                                     <x-larastrap::datepicker name="rid->date" tlabel="user.sepa.date" squeeze="true" :value="$user->rid['date'] ?? ''" />
-                                </x-larastrap::field>
+                                    </x-larastrap::field>
+                                @endif
                             @endif
+                        </x-ls::card>
+
+                        @if(!$groups->isEmpty())
+                            <x-ls::card header="aggregations.all">
+                                @foreach($groups as $ug)
+                                    @if($admin_editable || $ug->user_selectable)
+                                        <x-larastrap::hidden name="groups[]" :value="$ug->id" />
+                                        <x-dynamic-component :component="sprintf('larastrap::%s', $ug->cardinality == 'single' ? 'radiolist-model' : 'checklist-model')" :params="['name' => 'circles', 'npostfix' => sprintf('__%s__%s[]', sanitizeId($user->id), sanitizeId($ug->id)), 'label' => $ug->name, 'options' => $ug->circles]" />
+                                    @else
+                                        <x-dynamic-component :component="sprintf('larastrap::%s', $ug->cardinality == 'single' ? 'radiolist-model' : 'checklist-model')" :params="['name' => 'circles', 'npostfix' => sprintf('__%s__%s[]', sanitizeId($user->id), sanitizeId($ug->id)), 'label' => $ug->name, 'options' => $ug->circles]" readonly />
+                                    @endif
+                                @endforeach
+                            </x-ls::card>
                         @endif
 
                         @include('commons.permissionsviewer', ['object' => $user, 'editable' => $admin_editable])
                     @else
-                        <x-larastrap::datepicker name="member_since" tlabel="user.member_since" readonly disabled />
-                        <x-larastrap::datepicker name="last_login" tlabel="user.last_login" readonly disabled />
-                        <x-larastrap::datepicker name="last_booking" tlabel="user.last_booking" readonly disabled />
+                        <x-ls::card header="generic.gas">
+                        <x-larastrap::datepicker name="member_since" tlabel="user.member_since" readonly />
+                        <x-larastrap::datepicker name="last_login" tlabel="user.last_login" readonly />
+                        <x-larastrap::datepicker name="last_booking" tlabel="user.last_booking" readonly />
+                        </x-ls::card>
                     @endif
                 </div>
             </div>
@@ -158,7 +173,7 @@ if ($user->isFriend() && $admin_editable) {
             <hr/>
         </x-larastrap::mform>
 
-        @if($user->isFriend() == false && $currentuser->id === $user->id && $currentuser->can('users.selfdestroy'))
+        @if(!$user->isFriend() && $currentuser->id === $user->id && $currentuser->can('users.selfdestroy'))
             @php
             $removeModalId = sprintf('remove-account-%s', sanitizeId($user->id));
             @endphp
@@ -174,6 +189,7 @@ if ($user->isFriend() && $admin_editable) {
                             {{ __('texts.user.help.remove_profile_credit_notice') }}
                         </p>
                     @endif
+
                     <input type="hidden" name="pre-saved-function" value="passwordProtected">
                 </x-larastrap::iform>
             </x-larastrap::modal>
@@ -206,7 +222,7 @@ if ($user->isFriend() && $admin_editable) {
                                     {{ __('texts.user.help.reassign_friend', ['ex_parent' => $user->parent->printableName()]) }}
                                 </p>
 
-								<x-larastrap::select-model tlabel="user.change_friend_assignee" name="parent_id" :options="App\User::where('id', '!=', $user->parent_id)->with(['gas'])->topLevel()->sorted()->get()->filter(fn($u) => $u->can('users.subusers', $u->gas))" />
+                                <x-larastrap::select-model tlabel="user.change_friend_assignee" name="parent_id" :options="App\User::where('id', '!=', $user->parent_id)->with(['gas'])->topLevel()->sorted()->get()->filter(fn($u) => $u->can('users.subusers', $u->gas))" />
                             </x-larastrap::mform>
                         </x-larastrap::accordionitem>
                     </x-larastrap::accordion>
@@ -260,11 +276,11 @@ if ($user->isFriend() && $admin_editable) {
                 </div>
 
                 <div class="row mt-2">
-                    <div class="col">
-                        <div class="btn-group float-end main-form-buttons" role="group">
-                            <button type="submit" class="btn btn-success saving-button">{{ __('texts.generic.save') }}</button>
-                        </div>
-                    </div>
+                <div class="col">
+                <div class="btn-group float-end main-form-buttons" role="group">
+                <button type="submit" class="btn btn-success saving-button">{{ __('texts.generic.save') }}</button>
+                </div>
+                </div>
                 </div>
             </form>
         </x-larastrap::tabpane>

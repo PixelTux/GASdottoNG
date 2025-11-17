@@ -1,4 +1,5 @@
 $font-size-base: 1.2rem;
+$btn-padding-x: 0.5rem;
 
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -113,6 +114,10 @@ html, body {
 
 .tab-pane {
 	padding-top: 10px;
+}
+
+.larastrap-form-buttons {
+    min-height: 30px;
 }
 
 .text-more-muted {
