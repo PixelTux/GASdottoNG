@@ -22,6 +22,7 @@ return array(
         'name' => '',
     ),
     'auth' => array(
+        'access' => '',
         'accept_privacy' => 'Ich habe die <a href="%s" target="_blank">Datenschutzhinweise</a> gelesen und akzeptiere sie.',
         'username' => 'Benutzername',
         'help' => array(
@@ -167,6 +168,7 @@ return array(
         'manual_approve_users' => 'Manuelle Freigabe neuer Benutzer*innen',
         'privacy_policy_link' => 'Link Datenschutz',
         'terms_link' => 'Link zu den Nutzungsbedingungen',
+        'enabled_fields' => 'Aktive Felder',
         'mandatory_fields' => 'Pflichtfelder',
         'orders_and_deliveries' => 'Bestellungen und Lieferungen',
         'only_bookings_with_credit' => 'Erlaube Vorbestellungen nur bei verfügbarem Guthaben',

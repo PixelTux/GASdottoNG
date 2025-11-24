@@ -2,12 +2,12 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-
-use Log;
 
 use App\Events\SluggableCreating;
 
@@ -22,6 +22,11 @@ class MovementType extends Model
     protected $dispatchesEvents = [
         'creating' => SluggableCreating::class,
     ];
+
+    public function movements(): HasMany
+    {
+        return $this->hasMany(Movement::class, 'type');
+    }
 
     public function hasPayment($type)
     {
@@ -42,10 +47,10 @@ class MovementType extends Model
     public function validForInvoices()
     {
         return ($this->visibility && (
-            ($this->sender_type == 'App\Gas' && ($this->target_type == 'App\Supplier' || $this->target_type == 'App\Invoice')) ||
-            ($this->sender_type == 'App\Supplier' && $this->target_type == 'App\Gas') ||
-            ($this->sender_type == 'App\Gas' && $this->target_type == null) ||
-            ($this->sender_type == null && $this->target_type == 'App\Gas')
+            ($this->sender_type == Gas::class && ($this->target_type == Supplier::class || $this->target_type == Invoice::class)) ||
+            ($this->sender_type == Supplier::class && $this->target_type == Gas::class) ||
+            ($this->sender_type == Gas::class && $this->target_type == null) ||
+            ($this->sender_type == null && $this->target_type == Gas::class)
         )) || $this->id == 'invoice-payment';
     }
 

@@ -22,6 +22,7 @@ return array(
         'name' => 'Aggregation',
     ),
     'auth' => array(
+        'access' => 'Access',
         'failed' => 'These credentials do not match our records.',
         'password' => 'Password',
         'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
@@ -166,6 +167,7 @@ return array(
         'manual_approve_users' => 'Manual authorisation of new users',
         'privacy_policy_link' => 'Privacy Policy Link',
         'terms_link' => 'Link to Terms and Conditions',
+        'enabled_fields' => 'Enabled Fields',
         'mandatory_fields' => 'Mandatory Fields',
         'orders_and_deliveries' => 'Orders and delivery',
         'only_bookings_with_credit' => 'Permit bookings only within available credit',

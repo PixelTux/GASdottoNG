@@ -1,4 +1,4 @@
-<?php
+@php
 
 $target_classes = [
     '' => __('texts.generic.none'),
@@ -15,13 +15,13 @@ foreach($classes as $class => $name) {
     $target_classes[$class] = $name;
 }
 
-?>
+@endphp
 
-<x-larastrap::mform :obj="$type" classes="main-form movement-type-editor" method="PUT" :action="route('movtypes.update', $type->id)" :nodelete="$type->system">
+<x-larastrap::mform :obj="$type" classes="main-form movement-type-editor" method="PUT" :action="route('movtypes.update', $type->id)" :nodelete="$type->system || $type->movements()->count() != 0">
     <input type="hidden" name="pre-saved-function" value="filterOutUnusedRules" class="skip-on-submit">
-	<input type="hidden" name="post-saved-function" value="afterMovementTypeChange" class="skip-on-submit">
+    <input type="hidden" name="post-saved-function" value="afterMovementTypeChange" class="skip-on-submit">
 
-	@if($type->system)
+    @if($type->system)
         <div class="row mb-4">
             <div class="col">
                 <div class="alert alert-danger">
@@ -31,13 +31,13 @@ foreach($classes as $class => $name) {
         </div>
     @endif
 
-	@if($type->hasBrokenModifier())
-		<div class="row mb-4">
-			<div class="col">
-				@include('movementtypes.broken_modifier', ['id' => $type->id])
-			</div>
-		</div>
-	@endif
+    @if($type->hasBrokenModifier())
+        <div class="row mb-4">
+            <div class="col">
+                @include('movementtypes.broken_modifier', ['id' => $type->id])
+            </div>
+        </div>
+    @endif
 
     <div class="row">
         <div class="col-12 col-md-6">
@@ -55,7 +55,7 @@ foreach($classes as $class => $name) {
             <x-larastrap::textarea name="default_notes" tlabel="generic.default_notes" />
         </div>
 
-        <?php
+        @php
 
         $ops = json_decode($type->function);
         $methods = [];
@@ -89,18 +89,16 @@ foreach($classes as $class => $name) {
             }
         }
 
-        $width = floor(100 / (count(paymentTypes()) + 1));
-
-        ?>
+        @endphp
 
         <div class="col-md-12">
-            <table class="table">
+            <table class="table fixed-table">
                 <thead>
                     <tr>
-                        <th scope="col" width="{{ $width }}%">Saldo</th>
+                        <th scope="col">Saldo</th>
 
                         @foreach(paymentTypes() as $pay_id => $pay)
-                            <th scope="col" width="{{ $width }}%">
+                            <th scope="col">
                                 {{ $pay->name }}
                                 <div class="form-check form-switch">
                                     <input type="checkbox" name="{{ $pay_id }}" class="form-check-input" {{ $payments[$pay_id] ? 'checked' : '' }}>
@@ -175,7 +173,7 @@ foreach($classes as $class => $name) {
                                 <td>{{ $meta->label }} - {{ $fieldname }}</td>
 
                                 @foreach(paymentTypes() as $pay_id => $pay)
-                                    <?php
+                                    @php
 
                                     $selection = 'ignore';
                                     if (isset($methods[$pay_id]) && isset($methods[$pay_id][$meta->peer]) && isset($methods[$pay_id][$meta->peer][$field])) {
@@ -184,7 +182,7 @@ foreach($classes as $class => $name) {
 
                                     $row_name = sprintf('%s-%s-%s-%s', $meta->peer, $meta->classname, $field, $pay_id);
 
-                                    ?>
+                                    @endphp
 
                                     <td>
                                         <div class="btn-group" data-toggle="buttons">
