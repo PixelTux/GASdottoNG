@@ -10,6 +10,7 @@
             <div class="col">
                 <table class="table">
                     @include('variant.matrixhead', [
+                        'sorting' => false,
                         'combos' => $combos,
                     ])
 

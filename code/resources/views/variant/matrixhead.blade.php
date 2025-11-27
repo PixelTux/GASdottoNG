@@ -1,6 +1,8 @@
 <thead>
 	<tr>
-        <th scope="col">&nbsp;</th>
+        @if($sorting)
+            <th scope="col">&nbsp;</th>
+        @endif
 
 		@foreach($combos->first()->values as $value)
 			<th scope="col">{{ $value->variant->name }}</th>

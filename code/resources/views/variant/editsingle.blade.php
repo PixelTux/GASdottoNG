@@ -14,6 +14,7 @@
 
                 <table class="table table-borderless table-sm dynamic-table sortable-table">
 					@include('variant.matrixhead', [
+                        'sorting' => true,
                         'combos' => $combos,
                     ])
 
