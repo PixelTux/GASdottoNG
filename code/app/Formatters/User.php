@@ -38,7 +38,6 @@ class User extends Formatter
         foreach ($groups as $group) {
             $ret['group_' . $group->id] = (object) [
                 'name' => __('texts.user.formatted_aggregation', ['name' => $group->name]),
-                'checked' => true,
                 'format' => function ($obj, $context) use ($group) {
                     return implode(' - ', array_map(fn ($c) => $c->printableName(), $obj->circlesByGroup($group)->circles));
                 },
@@ -142,11 +141,11 @@ class User extends Formatter
         $ret = [
             'lastname' => (object) [
                 'name' => __('texts.user.lastname'),
-                'checked' => true,
+                'checked' => ($type == 'export'),
             ],
             'firstname' => (object) [
                 'name' => __('texts.user.firstname'),
-                'checked' => true,
+                'checked' => ($type == 'export'),
             ],
             'fullname' => (object) [
                 'name' => __('texts.user.fullname'),
