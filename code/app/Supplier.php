@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,8 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use GeneaLabs\LaravelModelCaching\Traits\Cachable;
-
-use Auth;
 
 use App\Models\Concerns\AttachableTrait;
 use App\Models\Concerns\ContactableTrait;
@@ -53,27 +52,27 @@ class Supplier extends Model
 
     public function products(): HasMany
     {
-        return $this->hasMany('App\Product')->with('measure');
+        return $this->hasMany(Product::class)->with('measure');
     }
 
     public function orders(): HasMany
     {
-        return $this->hasMany('App\Order')->orderBy('end', 'asc');
+        return $this->hasMany(Order::class)->orderBy('end', 'asc');
     }
 
     public function bookings(): HasManyThrough
     {
-        return $this->hasManyThrough('App\Booking', 'App\Order');
+        return $this->hasManyThrough(Booking::class, Order::class);
     }
 
     public function invoices(): HasMany
     {
-        return $this->hasMany('App\Invoice');
+        return $this->hasMany(Invoice::class);
     }
 
     public function calendarDates(): MorphMany
     {
-        return $this->morphMany('App\Date', 'target')->orderBy('date', 'asc');
+        return $this->morphMany(Date::class, 'target')->orderBy('date', 'asc');
     }
 
     public function scopeFilterEnabled($query)
@@ -214,5 +213,10 @@ class Supplier extends Model
     public function exportJSON()
     {
         return view('gdxp.json.supplier', ['obj' => $this])->render();
+    }
+
+    public function catalogueExportURL()
+    {
+        return route('suppliers.catalogue', ['id' => $this->id]);
     }
 }

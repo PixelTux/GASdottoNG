@@ -877,6 +877,11 @@ class Order extends Model
         return view('gdxp.json.supplier', ['obj' => $this->supplier, 'order' => $this, 'currentgas' => $gas])->render();
     }
 
+    public function catalogueExportURL()
+    {
+        return route('orders.catalogue', ['id' => $this->id]);
+    }
+
     /******************************************************** ModifiableTrait */
 
     public function inheritModificationTypes()

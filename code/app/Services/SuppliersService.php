@@ -2,17 +2,17 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+
+use App\Services\Concerns\ExportsCatalogue;
 use App\Exceptions\AuthException;
-
-use Log;
-use DB;
-use PDF;
-
-use App\Formatters\Product as ProductFormatter;
 use App\Supplier;
 
 class SuppliersService extends BaseService
 {
+    use ExportsCatalogue;
+
     private function accessible($user)
     {
         $suppliers_id = [];
@@ -128,40 +128,6 @@ class SuppliersService extends BaseService
         }
 
         return $supplier;
-    }
-
-    public function catalogue($id, $format, array $request)
-    {
-        $this->ensureAuth();
-
-        $format = $format ?: $request['format'];
-        $supplier = $this->show($id);
-
-        if ($format == 'gdxp') {
-            return redirect($supplier->exportableURL());
-        }
-
-        /*
-            Questi sono i dati di default, da usare quando si fa il download del
-            listino come allegato al fornitore (e dunque non si passa per il
-            pannello di selezione dei campi).
-            Cfr. Supplier::defaultAttachments()
-        */
-        $fields = $request['fields'] ?? ['name', 'measure', 'price', 'active'];
-        $headers = ProductFormatter::getHeaders($fields);
-        $filename = sanitizeFilename(__('texts.export.products_list_filename', ['supplier' => $supplier->name, 'format' => $format]));
-
-        $products = $supplier->products()->sorted()->get();
-        $data = ProductFormatter::formatArray($products, $fields);
-
-        if ($format == 'pdf') {
-            $pdf = PDF::loadView('documents.cataloguepdf', ['supplier' => $supplier, 'headers' => $headers, 'data' => $data]);
-
-            return $pdf->download($filename);
-        }
-        elseif ($format == 'csv') {
-            return output_csv($filename, $headers, $data, null);
-        }
     }
 
     public function destroy($id)

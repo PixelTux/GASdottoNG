@@ -998,6 +998,9 @@ In futuro potrai accedere usando quest\'altro link, lo username "%[username]" e 
 				'table' => 'Tabella Complessiva Prodotti',
 				'shipping_and_summary' => 'Dettaglio Consegne + Riassunto Prodotti',
 			),
+            'booking' => array(
+                'shipping' => 'Dettaglio Prenotazione',
+            ),
 		),
 		'help_aggregate_status' => 'Da qui puoi modificare lo stato di tutti gli ordini inclusi nell\'aggregato',
 		'change_date' => 'Modifica Date',

@@ -78,13 +78,6 @@ class SuppliersController extends BackedController
         }
     }
 
-    public function catalogue(Request $request, $id, $format = null)
-    {
-        return $this->easyExecute(function () use ($request, $id, $format) {
-            return $this->service->catalogue($id, $format, $request->all());
-        });
-    }
-
     public function invoiceData($id)
     {
         return $this->easyExecute(function () use ($id) {

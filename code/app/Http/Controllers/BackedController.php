@@ -74,6 +74,13 @@ class BackedController extends Controller
         });
     }
 
+    public function catalogue(Request $request, $id, $format = null)
+    {
+        return $this->easyExecute(function () use ($request, $id, $format) {
+            return $this->service->catalogue($id, $format, $request->all());
+        });
+    }
+
     public function destroy($id)
     {
         return $this->easyExecute(function () use ($id) {

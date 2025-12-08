@@ -62,7 +62,6 @@ trait BookerTrait
         $bookings = $all_bookings->filter(fn($b) => $b->user_id == $this->id);
 
         $value = 0;
-
         foreach ($bookings as $b) {
             $value += $b->getValue('effective', false);
         }

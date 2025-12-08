@@ -35,7 +35,7 @@ if ($user->isFriend() == false) {
 @endphp
 
 <div class="row booking-header">
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-4">
         @if($user->isFriend() == false)
             @if($editable)
                 @foreach($select_circles as $meta)
@@ -59,10 +59,15 @@ if ($user->isFriend() == false) {
         @endif
     </div>
     <div class="col-12 col-md-4">
+        @include('attachment.partials.downloadable', [
+            'obj' => $aggregate,
+        ])
+    </div>
+    <div class="col-12 col-md-4">
         <x-larastrap::card header="generic.download">
             <div class="list-group">
                 <a href="{{ url('booking/' . $aggregate->id . '/user/' . $user->id . '/document') }}" class="list-group-item list-group-item-action">
-                    {{ __('texts.orders.files.order.shipping') }}
+                    {{ __('texts.orders.files.booking.shipping') }}
                     <i class="bi-download float-end"></i>
                 </a>
 
@@ -76,10 +81,6 @@ if ($user->isFriend() == false) {
                 @endif
             </div>
         </x-larastrap::card>
-
-        @include('attachment.partials.downloadable', [
-            'obj' => $aggregate,
-        ])
     </div>
 </div>
 

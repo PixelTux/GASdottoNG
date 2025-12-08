@@ -160,6 +160,12 @@ html, body {
     flex-wrap: wrap;
 }
 
+.gapped-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 table {
     .form-group {
         margin-bottom: 0;

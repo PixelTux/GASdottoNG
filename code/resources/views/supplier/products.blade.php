@@ -26,22 +26,7 @@
                 ]
             ])
 
-            <x-larastrap::mbutton tlabel="supplier.export_products" triggers_modal="#export_products" />
-            <x-larastrap::modal id="export_products" classes="close-on-submit">
-                <x-larastrap::form method="GET" :action="route('suppliers.catalogue', ['id' => $supplier->id])" :buttons="[['tlabel' => 'generic.download', 'type' => 'submit']]">
-                    <p>{{ __('texts.export.help_csv_libreoffice') }}</p>
-
-                    <hr/>
-
-                    <x-larastrap::structchecks name="fields" tlabel="export.data.columns" :options="App\Formatters\Product::formattableColumns()" />
-
-                    <x-larastrap::radios name="format" tlabel="export.data.format" :options="[
-                        'pdf' => __('texts.export.data.formats.pdf'),
-                        'csv' => __('texts.export.data.formats.csv'),
-                        'gdxp' => __('texts.export.data.formats.gdxp'),
-                    ]" value="pdf" />
-                </x-larastrap::form>
-            </x-larastrap::modal>
+            <x-larastrap::ambutton tlabel="supplier.export_products" :href="route('suppliers.catalogue', ['id' => $supplier->id, 'format' => 'modal'])" />
         </div>
     </div>
 

@@ -12,4 +12,6 @@ trait ExportableTrait
     abstract public function exportXML();
 
     abstract public function exportJSON();
+
+    abstract public function catalogueExportURL();
 }

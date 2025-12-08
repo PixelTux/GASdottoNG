@@ -140,21 +140,21 @@ $form_buttons = [
             </div>
 
             @foreach($aggregate->orders as $order)
-                <?php
-
+                @php
                 $o = $booking->getOrderBooking($order);
                 $booking_total = $o->getValue('effective', false);
                 $mods = $o->applyModifiers(null, false);
-
-                ?>
+                $modal_id = 'export_products-' . sanitizeId($order->id);
+                @endphp
 
                 <div class="filter-master-block">
                     <div class="row mb-2">
                         <div class="col">
-                            <h1>
+                            <h2 class="gapped-row">
                                 {{ $order->supplier->printableName() }}
                                 @include('commons.detailsbutton', ['obj' => $order->supplier])
-                            </h1>
+                                <x-larastrap::ambutton classes="d-none d-xl-inline-block" tlabel="supplier.export_products" :href="route('orders.catalogue', ['id' => $order->id, 'format' => 'modal'])" />
+                            </h2>
                         </div>
                     </div>
 
@@ -165,7 +165,7 @@ $form_buttons = [
                             'mods' => $mods,
                         ])
                     @else
-                        <?php
+                        @php
 
                         $notice = null;
 
@@ -185,7 +185,7 @@ $form_buttons = [
                         $categories = $products->getProductsCategories();
                         $contacts = $order->showableContacts();
 
-                        ?>
+                        @endphp
 
                         @if(!is_null($notice))
                             <x-larastrap::suggestion>

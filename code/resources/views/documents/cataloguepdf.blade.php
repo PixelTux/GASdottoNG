@@ -9,7 +9,10 @@
     </head>
 
     <body>
-        <h3>{{ __('texts.supplier.products_list_heading', [$supplier->name, date('d/m/Y')]) }}</h3>
+        <h3>{{ __('texts.supplier.products_list_heading', [
+            'supplier' => $subject->printableName(),
+            'date' => date('d/m/Y'),
+        ]) }}</h3>
 
         <hr/>
 

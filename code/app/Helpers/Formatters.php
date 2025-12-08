@@ -35,6 +35,7 @@ function sanitizeId($identifier)
 
 function sanitizeFilename($filename)
 {
+    $filename = iconv('UTF-8', 'ASCII//TRANSLIT', $filename);
     return preg_replace('/[^0-9a-zA-Z \.]/', '-', $filename);
 }
 

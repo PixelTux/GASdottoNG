@@ -3,16 +3,17 @@
 namespace App\Services;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
-use App;
-use DB;
-
+use App\Services\Concerns\ExportsCatalogue;
 use App\Order;
 use App\Aggregate;
 use App\Supplier;
 
 class OrdersService extends BaseService
 {
+    use ExportsCatalogue;
+
     public function show($id, $edit = false)
     {
         $ret = Order::findOrFail($id);
@@ -121,36 +122,30 @@ class OrdersService extends BaseService
         DB::beginTransaction();
         $order = $this->show($id, true);
         $order->delete();
-
         return $order;
     }
 
     public function fixModifiers($id, $action)
     {
-        switch ($action) {
-            case 'none':
-                break;
+        if ($action == 'adjust') {
+            $order = $this->show($id, true);
+            $aggregate = $order->aggregate;
+            $hub = app()->make('GlobalScopeHub');
+            $initial_gas = $hub->getGas();
 
-            case 'adjust':
-                $order = $this->show($id, true);
-                $aggregate = $order->aggregate;
-                $hub = App::make('GlobalScopeHub');
-                $initial_gas = $hub->getGas();
+            foreach ($aggregate->gas as $gas) {
+                $hub->setGas($gas->id);
+                $redux = $aggregate->reduxData();
 
-                foreach ($aggregate->gas as $gas) {
-                    $hub->setGas($gas->id);
-                    $redux = $aggregate->reduxData();
-
-                    foreach ($aggregate->orders as $order) {
-                        foreach ($order->bookings as $booking) {
-                            $booking->saveModifiers($redux);
-                            $booking->fixPayment();
-                        }
+                foreach ($aggregate->orders as $order) {
+                    foreach ($order->bookings as $booking) {
+                        $booking->saveModifiers($redux);
+                        $booking->fixPayment();
                     }
                 }
+            }
 
-                $hub->setGas($initial_gas);
-                break;
+            $hub->setGas($initial_gas);
         }
 
         return true;
