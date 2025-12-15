@@ -19,6 +19,7 @@ class SupplierSummary extends MailType
         return [
             'supplier_name' => __('texts.orders.supplier'),
             'order_number' => __('texts.orders.help.number'),
+            'download_link' => __('texts.orders.help.downloadlink'),
         ];
     }
 

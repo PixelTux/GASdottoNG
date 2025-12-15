@@ -7,21 +7,18 @@ use Illuminate\Support\Collection;
 use App\Notifications\Concerns\ManyMailNotification;
 use App\Notifications\Concerns\MailFormatter;
 use App\Notifications\Concerns\MailReplyTo;
-use App\Notifications\Concerns\TemporaryFiles;
 
 class SupplierOrderShipping extends ManyMailNotification
 {
-    use MailFormatter, MailReplyTo, TemporaryFiles;
+    use MailFormatter, MailReplyTo;
 
     private $gas;
-
     private $order;
 
-    public function __construct($gas, $order, $files)
+    public function __construct($gas, $order)
     {
         $this->gas = $gas;
         $this->order = $order;
-        $this->setFiles($files);
     }
 
     public function toMail($notifiable)
@@ -38,6 +35,9 @@ class SupplierOrderShipping extends ManyMailNotification
         $message = $this->formatMail($message, $notifiable, 'supplier_summary', [
             'supplier_name' => $this->order->supplier->name,
             'order_number' => $this->order->number,
+            'download_link' => publicGateGetLink('odoc', 'show', [
+                'id' => $this->order->id,
+            ]),
         ]);
 
         $users = everybodyCan('supplier.orders', $this->order->supplier);
@@ -48,12 +48,7 @@ class SupplierOrderShipping extends ManyMailNotification
             }
         }
 
-        foreach ($this->getFiles() as $file) {
-            $message->attach($file);
-        }
-
         $message = $this->guessReplyTo($message, $this->order);
-
         return $message;
     }
 }

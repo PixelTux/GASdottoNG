@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Illuminate\Support\Str;
+
 class FormattersTest extends TestCase
 {
     public function test_printable_price()
@@ -236,5 +238,13 @@ class FormattersTest extends TestCase
         $this->assertEquals(10, closestNumber([20, 10], 9));
         $this->assertEquals(10, closestNumber([20, 10], 14));
         $this->assertEquals(10.5, closestNumber([10.5, 20.5], 12.3));
+    }
+
+    public function test_encrypt()
+    {
+        $string = Str::random(100);
+        $encrypted = baseEncrypt($string);
+        $decrypted = baseDecrypt($encrypted);
+        $this->assertEquals($string, $decrypted);
     }
 }

@@ -312,3 +312,41 @@ function formatAccordionLabel($label, $icon)
     $text = __('texts.' . $label);
     return sprintf('<i class="bi-%s"></i> %s', $icon, $text);
 }
+
+function baseEncrypt($string)
+{
+    $key = substr(env('APP_KEY'), 0, SODIUM_CRYPTO_SECRETBOX_KEYBYTES);
+    $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    return base64_encode($nonce . sodium_crypto_secretbox($string, $nonce, $key));
+}
+
+function baseDecrypt($string)
+{
+    $key = substr(env('APP_KEY'), 0, SODIUM_CRYPTO_SECRETBOX_KEYBYTES);
+    $decoded = base64_decode($string);
+    $nonce = mb_substr($decoded, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, '8bit');
+    $ciphertext = mb_substr($decoded, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, null, '8bit');
+    return sodium_crypto_secretbox_open($ciphertext, $nonce, $key);
+}
+
+function publicGateGetLink($type, $action = 'show', $params = [])
+{
+    $payload = [
+        't' => $type,
+        'p' => $params,
+    ];
+
+    $string = json_encode($payload);
+    $encrypted = baseEncrypt($string);
+
+    return route('public.gate', [
+        'token' => $encrypted,
+        'action' => $action,
+    ]);
+}
+
+function publicGateRetrieveLink($encrypted)
+{
+    $string = baseDecrypt($encrypted);
+    return json_decode($string);
+}

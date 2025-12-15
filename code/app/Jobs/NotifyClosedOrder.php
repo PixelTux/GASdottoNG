@@ -25,39 +25,6 @@ class NotifyClosedOrder implements ShouldQueue
         $this->orders = $orders;
     }
 
-    private function filesForSupplier($order)
-    {
-        $printer = new OrderPrinter();
-
-        $type = $order->supplier->notify_on_close_enabled;
-        if ($type == 'shipping_summary') {
-            $types = ['shipping', 'summary'];
-        }
-        else {
-            $types = [$type];
-        }
-
-        $files = [];
-        foreach ($types as $type) {
-            foreach (['pdf', 'csv'] as $format) {
-                $f = $printer->document($order, $type, [
-                    'format' => $format,
-                    'status' => 'pending',
-                    'extra_modifiers' => 0,
-                    'action' => 'save',
-                ]);
-
-                if ($f) {
-                    if (file_exists($f) && filesize($f) != 0) {
-                        $files[] = $f;
-                    }
-                }
-            }
-        }
-
-        return $files;
-    }
-
     private function dispatchToSupplier($order)
     {
         if ($order->isRunning() === false) {
@@ -69,20 +36,7 @@ class NotifyClosedOrder implements ShouldQueue
                 foreach ($order->aggregate->gas as $gas) {
                     try {
                         $hub->enable(false);
-                        $files = $this->filesForSupplier($order);
-
-                        if (empty($files)) {
-                            \Log::warning('Non ci sono files da allegare al fornitore per la notifica di chiusura ordine');
-                        }
-                        else {
-                            /*
-                                Reminder: i files vengono automaticamente rimossi
-                                dopo l'invio della notifica, da parte di
-                                SupplierOrderShipping
-                            */
-                            $supplier->notify(new SupplierOrderShipping($gas, $order, $files));
-                        }
-
+                        $supplier->notify(new SupplierOrderShipping($gas, $order));
                         $hub->enable(true);
                     }
                     catch(HttpTransportException $e) {

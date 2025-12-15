@@ -554,7 +554,10 @@ return array(
 			'defaults' => array(
 				'subject' => 'Prenotazione ordine %[gas_name]',
 				'body' => 'Buongiorno.
-In allegato trova - in duplice copia, PDF e CSV - la prenotazione dell\'ordine da parte di %[gas_name].
+Al seguente link trova i dettagli relativi alla prenotazione dell\'ordine da parte di %[gas_name].
+
+%[download_link]
+
 Per segnalazioni, può rivolgersi ai referenti in copia a questa mail.
 Grazie.',
 			),
@@ -891,6 +894,7 @@ In futuro potrai accedere usando quest\'altro link, lo username "%[username]" e 
 			'unremovable_warning' => 'L\'ordine :name ha attualmente delle prenotazioni attive, e non può essere pertanto rimosso.',
 			'unremovable_instructions' => 'Si raccomanda di accedere al <a href=":link">pannello delle prenotazioni per questo ordine</a> e, con lo strumento "Prenotazioni per Altri Utenti", invalidare le prenotazioni esistenti.',
 			'unremovable_notice' => 'Questo meccanismo è deliberatamente non automatico e volutamente complesso, per evitare la perdita involontaria di dati.',
+            'downloadlink' => 'Link per scaricare i documenti',
 		),
 		'booking_description' => array(
 			'shipped' => 'Di seguito il riassunto dei prodotti che ti sono stati consegnati:',
@@ -1000,6 +1004,9 @@ In futuro potrai accedere usando quest\'altro link, lo username "%[username]" e 
 			),
             'booking' => array(
                 'shipping' => 'Dettaglio Prenotazione',
+            ),
+            'public' => array(
+                'help' => "Da qui puoi scaricare i file relativi all'ordine<br>:order",
             ),
 		),
 		'help_aggregate_status' => 'Da qui puoi modificare lo stato di tutti gli ordini inclusi nell\'aggregato',

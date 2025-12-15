@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
+use App\Config;
+
 class FixDatabase extends Command
 {
     protected $signature = 'fix:database';
@@ -33,5 +35,7 @@ class FixDatabase extends Command
     public function handle()
     {
         $this->doAlways();
+
+        Config::where('name', 'mail_supplier_summary')->delete();
     }
 }

@@ -56,4 +56,6 @@ $mandatories = currentAbsoluteGas()->public_registrations['mandatory_fields'];
     </p>
 </div>
 
+@include('commons.promofooter')
+
 @endsection

@@ -10,6 +10,7 @@ Route::get('autologin/{token}', 'Auth\LoginController@autologin')->name('autolog
 Route::middleware([SetLanguage::class])->group(function () {
     Auth::routes();
 
+    Route::get('public/gate/{token}/{action}', 'PublicGateController@show')->name('public.gate')->where(['token' => ".+"]);
     Route::get('ordini.xml', 'OrdersController@rss')->name('rss');
     Route::get('ordini.ics', 'OrdersController@ical')->name('ical');
 });
