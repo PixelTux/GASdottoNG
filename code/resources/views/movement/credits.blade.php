@@ -79,7 +79,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($currentgas->users()->topLevel()->get() as $user)
+                                    @foreach($currentgas->users()->topLevel()->with(['friends'])->get() as $user)
                                         @php
 
                                         $serialized_circles = [];

@@ -659,7 +659,8 @@ class Order extends Model
         $key = 'involved_modifiers_' . ($include_groups ? 'groups' : 'no_groups');
 
         return $this->innerCache($key, function ($obj) use ($include_groups) {
-            $modifiers = $this->modifiers;
+            $modifiers = $obj->modifiers;
+            $modifiers->each(fn($m) => $m->setRelation('target', $obj));
 
             foreach ($obj->products as $product) {
                 $modifiers = $modifiers->merge($product->modifiers);

@@ -63,6 +63,14 @@ trait BookerTrait
 
         $value = 0;
         foreach ($bookings as $b) {
+            foreach($b->products as $prod) {
+                $prod->setRelation('booking', $b);
+
+                foreach($prod->variants as $var) {
+                    $var->setRelation('product', $prod);
+                }
+            }
+
             $value += $b->getValue('effective', false);
         }
 
