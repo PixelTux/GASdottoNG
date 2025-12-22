@@ -86,7 +86,7 @@ class Roles {
         }).on('click', '.remove-role', function(e) {
             e.preventDefault();
 
-            if(confirm(_('Sei sicuro di voler revocare questo ruolo?'))) {
+            if(confirm(_('texts.permissions.revoke_confirm'))) {
                 let button = $(this);
                 let userid = button.attr('data-user');
 

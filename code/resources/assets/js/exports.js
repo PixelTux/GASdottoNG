@@ -1,6 +1,3 @@
-require('jquery-ui/ui/widgets/draggable');
-require('jquery-ui/ui/widgets/droppable');
-
 class Exports {
     static init(container)
     {

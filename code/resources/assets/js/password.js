@@ -23,14 +23,14 @@ $(document).ready(function() {
         input.popover({
             content: function() {
                 var ret = `<div>
-                    <div class="row mb-2"><label for="password" class="col-4 col-form-label">${_('Nuova Password')}</label><div class="col-8"><input type="password" class="form-control" name="password" value="" autocomplete="off" minlength="8"></div></div>
-                    <div class="row mb-2"><label for="password_confirm" class="col-4 col-form-label">${_('Conferma Password')}</label><div class="col-8"><input type="password" class="form-control" name="password_confirm" value="" autocomplete="off" minlength="8"></div></div>`;
+                <div class="row mb-2"><label for="password" class="col-4 col-form-label">${_('texts.auth.password')}</label><div class="col-8"><input type="password" class="form-control" name="password" value="" autocomplete="off" minlength="8"></div></div>
+                    <div class="row mb-2"><label for="password_confirm" class="col-4 col-form-label">${_('texts.auth.confirm_password')}</label><div class="col-8"><input type="password" class="form-control" name="password_confirm" value="" autocomplete="off" minlength="8"></div></div>`;
 
                 if (input.hasClass('enforcable_change')) {
-                    ret += '<div class="checkbox"><label><input type="checkbox" name="enforce_change"> ' + _('Forza cambio password al prossimo login') + '</label></div><br>';
+                    ret += '<div class="checkbox"><label><input type="checkbox" name="enforce_change"> ' + _('texts.auth.enforce_change') + '</label></div><br>';
                 }
 
-                ret += '<div class="row"><div class="col-8 offset-4"><button class="btn btn-light">' + _('Annulla') + '</button> <button class="btn btn-success">' + _('Conferma') + '</button></div></div></div>';
+                ret += '<div class="row"><div class="col-8 offset-4"><button class="btn btn-light">' + _('texts.generic.cancel') + '</button> <button class="btn btn-success">' + _('texts.generic.confirm') + '</button></div></div></div>';
 
                 ret = $(ret);
 
@@ -96,7 +96,7 @@ $(document).ready(function() {
                 }
                 else {
                     var save_button = form.find('button:submit');
-                    utils.inlineFeedback(save_button, _('Password errata!'));
+                    utils.inlineFeedback(save_button, _('texts.auth.wrong'));
                 }
             }
         });

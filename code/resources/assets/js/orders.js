@@ -1,5 +1,4 @@
-require('./aggregation');
-
+import './aggregation';
 import utils from "./utils";
 
 class Orders
@@ -59,7 +58,7 @@ class Orders
             if ($(this).prop('checked') == false) {
                 var quantity = utils.parseFloatC(row.find('.order-summary-product-price').text());
                 if (quantity != 0) {
-                    if (confirm(_('Ci sono prenotazioni attive per questo prodotto. Sei sicuro di volerlo disabilitare?')) == false) {
+                    if (confirm(_('texts.orders.help.booked_disabled_product')) == false) {
                         $(this).prop('checked', true);
                         return;
                     }
@@ -74,10 +73,10 @@ class Orders
             var submit = utils.j().submitButton(form);
 
             if (status) {
-                submit.text(_('Invia Mail'));
+                submit.text(_('texts.generic.send_mail'));
             }
             else {
-                submit.text(_('Salva'));
+                submit.text(_('texts.generic.save'));
             }
 
             form.toggleClass('inner-form', status);

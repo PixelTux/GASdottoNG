@@ -11,11 +11,12 @@
         <title>{{ currentAbsoluteGas()->name }} | GASdotto</title>
         <link rel="alternate" type="application/rss+xml" title="{{ __('texts.orders.list_open') }}" href="{{ route('rss') }}"/>
 
-        <link rel="stylesheet" type="text/css" href="{{ mix('/css/gasdotto.css') }}">
+        @vite(['resources/assets/sass/gasdotto.scss', 'resources/assets/js/gasdotto.js'])
 
         <meta name="csrf-token" content="{{ csrf_token() }}"/>
         <meta name="absolute_url" content="{{ route('root') }}"/>
         <meta name="current_currency" content="{{ currentAbsoluteGas()->currency }}"/>
+        <meta name="client_translations" content="{{ json_encode(serializeClientTranslations()) }}"/>
 
         @if(Auth::check())
             <meta name="needs_tour" content="{{ $currentuser->tour ? '0' : '1' }}"/>
@@ -98,10 +99,6 @@
         @endif
 
         @include('commons.passwordmodal')
-
-        <script src="{{ mix('/js/gasdotto.js') }}"></script>
-        <script src="{{ asset('/js/lang/bootstrap-datepicker.' . htmlLang() . '.min.js') }}"></script>
-        <script src="{{ asset('/js/lang/' . htmlLang() . '.js') }}"></script>
 
         <!-- Piwik -->
         <script type="text/javascript">

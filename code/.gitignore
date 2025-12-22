@@ -3,6 +3,7 @@
 .env
 .env.*
 /public/hot
+/public/build
 /public/storage
 /public/vendor
 /public/storage/appsupplier*

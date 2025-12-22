@@ -116,7 +116,7 @@ class Callables {
             });
 
             if (test == false) {
-                test = confirm(_('Tutte le quantità consegnate sono a zero! Vuoi davvero procedere?'));
+                test = confirm(_('texts.orders.help.shipping_zero'));
 
                 if (test == false) {
                     throw "Empty!";

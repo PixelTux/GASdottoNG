@@ -41,7 +41,7 @@ class Bookings
                             if (while_shipping) {
                                 let test = data.find('.booking-product:not(.fit-add-product)');
                                 if (test.length != 0) {
-                                    data = $('<div class="alert alert-danger">' + _('Questa prenotazione esiste già e non può essere ricreata.') + '</div>');
+                                    data = $('<div class="alert alert-danger">' + _('texts.orders.help.booking_already_exists') + '</div>');
                                 }
                             }
 
@@ -208,7 +208,7 @@ class Bookings
 
             let form = $(e.currentTarget).closest('.inner-form');
 
-            if (confirm(_('Sei sicuro di voler annullare questa prenotazione?'))) {
+            if (confirm(_('texts.orders.help.void_booking'))) {
                 form.find('button').prop('disabled', true);
 
                 utils.postAjax({

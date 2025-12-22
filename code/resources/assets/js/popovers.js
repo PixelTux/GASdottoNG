@@ -28,19 +28,19 @@ $(document).ready(function() {
         complexPopover($(this), 'address', function(input) {
             let ret = $(`<div>
                 <div class="row mb-2">
-                    <label for="street" class="col-4 col-form-label">${_('Indirizzo')}</label>
+                    <label for="street" class="col-4 col-form-label">${_('texts.user.address_elements.street')}</label>
                     <div class="col-8"><input type="text" class="form-control" name="street" value="" autocomplete="off"></div>
                 </div>
                 <div class="row mb-2">
-                    <label for="city" class="col-4 col-form-label">${_('Città')}</label>
+                    <label for="city" class="col-4 col-form-label">${_('texts.user.address_elements.city')}</label>
                     <div class="col-sm-8"><input type="text" class="form-control" name="city" value="" autocomplete="off"></div>
                 </div>
                 <div class="row mb-2">
-                    <label for="cap" class="col-4 col-form-label">${_('CAP')}</label>
+                    <label for="cap" class="col-4 col-form-label">${_('texts.user.address_elements.zip')}</label>
                     <div class="col-sm-8"><input type="text" class="form-control" name="cap" value="" autocomplete="off"></div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-8 offset-4"><button class="btn btn-light">${_('Annulla')}</button> <button class="btn btn-success">${_('Salva')}</button></div>
+                    <div class="col-8 offset-4"><button class="btn btn-light">${_('texts.generic.cancel')}</button> <button class="btn btn-success">${_('texts.generic.save')}</button></div>
                 </div>
             </div>`);
 
@@ -92,43 +92,43 @@ $(document).ready(function() {
         complexPopover($(this), 'periodic', function(input) {
             let ret = $(`<div>
                 <div class="row mb-2">
-                    <label for="day" class="col-4 col-form-label">${_('Giorno')}</label>
+                <label for="day" class="col-4 col-form-label">${_('texts.generic.day')}</label>
                     <div class="col-8">
                         <select class="form-select" name="day" value="" autocomplete="off">
-                            <option value="monday">${_('Lunedì')}</option>
-                            <option value="tuesday">${_('Martedì')}</option>
-                            <option value="wednesday">${_('Mercoledì')}</option>
-                            <option value="thursday">${_('Giovedì')}</option>
-                            <option value="friday">${_('Venerdì')}</option>
-                            <option value="saturday">${_('Sabato')}</option>
-                            <option value="sunday">${_('Domenica')}</option>
+                            <option value="monday">${_('texts.generic.days.monday')}</option>
+                            <option value="tuesday">${_('texts.generic.days.tuesday')}</option>
+                            <option value="wednesday">${_('texts.generic.days.wednesday')}</option>
+                            <option value="thursday">${_('texts.generic.days.thursday')}</option>
+                            <option value="friday">${_('texts.generic.days.friday')}</option>
+                            <option value="saturday">${_('texts.generic.days.saturday')}</option>
+                            <option value="sunday">${_('texts.generic.days.sunday')}</option>
                         </select>
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <label for="cycle" class="col-4 col-form-label">${_('Periodicità')}</label>
+                <label for="cycle" class="col-4 col-form-label">${_('texts.notifications.cycle_param')}</label>
                     <div class="col-8">
                         <select class="form-select" name="cycle" value="" autocomplete="off">
-                            <option value="all">${_('Tutti')}</option>
-                            <option value="biweekly">${_('Ogni due Settimane')}</option>
-                            <option value="month_first">${_('Primo del Mese')}</option>
-                            <option value="month_second">${_('Secondo del Mese')}</option>
-                            <option value="month_third">${_('Terzo del Mese')}</option>
-                            <option value="month_fourth">${_('Quarto del Mese')}</option>
-                            <option value="month_last">${_('Ultimo del Mese')}</option>
+                            <option value="all">${_('texts.generic.all')}</option>
+                            <option value="biweekly">${_('texts.notifications.cycle.two_weeks')}</option>
+                            <option value="month_first">${_('texts.notifications.cycle.first_of_month')}</option>
+                            <option value="month_second">${_('texts.notifications.cycle.second_of_month')}</option>
+                            <option value="month_third">${_('texts.notifications.cycle.third_of_month')}</option>
+                            <option value="month_fourth">${_('texts.notifications.cycle.fourth_of_month')}</option>
+                            <option value="month_last">${_('texts.notifications.cycle.last_of_month')}</option>
                         </select>
                     </div>
                 </div>
                 <div class="row mb-2">
-                    <label for="day" class="col-4 col-form-label">${_('Dal')}</label>
+                <label for="day" class="col-4 col-form-label">${_('texts.generic.since')}</label>
                     <div class="col-8"><input type="text" class="date form-control" name="from" value="" autocomplete="off"></div>
                 </div>
                 <div class="row mb-2">
-                    <label for="day" class="col-4 col-form-label">${_('Al')}</label>
+                <label for="day" class="col-4 col-form-label">${_('texts.generic.to')}</label>
                     <div class="col-8"><input type="text" class="date form-control" name="to" value="" autocomplete="off"></div>
                 </div>
                 <div class="row mb-2">
-                    <div class="col-8 offset-4"><button class="btn btn-light">${_('Annulla')}</button> <button class="btn btn-success">${_('Salva')}</button></div>
+                    <div class="col-8 offset-4"><button class="btn btn-light">${_('texts.generic.cancel')}</button> <button class="btn btn-success">${_('texts.generic.save')}</button></div>
                 </div>
             </div>`);
 

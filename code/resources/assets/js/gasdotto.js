@@ -4,18 +4,17 @@
 
 import './boot';
 
-require('jquery-ui/ui/widgets/draggable');
-require('jquery-ui/ui/widgets/droppable');
-require('jquery-ui/ui/widgets/autocomplete');
-require('jquery-ui-touch-punch');
-require('blueimp-file-upload');
+import 'jquery-ui/dist/jquery-ui.js';
+import 'jquery-ui-touch-punch';
+import 'blueimp-file-upload';
 import Cookies from 'js-cookie';
 import { TourGuideClient } from "@sjmc11/tourguidejs";
 
-require('./jquery.dynamictree');
-require('./popovers');
-require('./translate');
-require('./password');
+import './jquery.dynamictree';
+import './popovers';
+import './translate';
+import './password';
+
 import utils from "./utils";
 import Lists from "./lists";
 import Forms from "./forms";
@@ -57,6 +56,14 @@ $.fn.tagName = function() {
     return this.prop("tagName").toLowerCase();
 };
 
+function listenMeasureSelectors(mselectors) {
+    mselectors.each(function() {
+        enforceMeasureDiscrete($(this));
+    }).on('change', function() {
+        enforceMeasureDiscrete($(this));
+    });
+}
+
 function generalInit(container) {
     if (container == null) {
         container = $('body');
@@ -93,14 +100,6 @@ function generalInit(container) {
         });
     }
 
-    function listenMeasureSelectors(mselectors) {
-        mselectors.each(function() {
-            enforceMeasureDiscrete($(this));
-        }).on('change', function() {
-            enforceMeasureDiscrete($(this));
-        });
-    }
-
     let mselectors = $('.measure-selector', container);
     if (mselectors.length != 0) {
         if (measure_discrete == null) {
@@ -131,12 +130,6 @@ function generalInit(container) {
 		pagina, rimettendo ordine nella gerarchia del DOM.
 	*/
     $('.postponed', container).appendTo('#postponed').removeClass('postponed');
-
-    $('ul[role=tablist]', container).each(function() {
-        if ($(this).find('li.active').length == 0) {
-            $(this).find('li a').first().tab('show');
-        }
-    });
 
     utils.init(container);
     Modifiers.init(container);
@@ -553,7 +546,7 @@ $(document).ready(function() {
         event.preventDefault();
         let form = $(this).closest('.main-form');
 
-        if (confirm(_('Sei sicuro di voler eliminare questo elemento?'))) {
+        if (confirm(_('texts.generic.delete_confirmation'))) {
             form.find('button').prop('disabled', true);
 
             $.ajax({
@@ -590,7 +583,7 @@ $(document).ready(function() {
             success: function(data) {
 				if (miscInnerCallbacks(form, data) == true) {
 	                utils.j().submitButton(form).each(function() {
-	                    utils.inlineFeedback($(this), _('Salvato!'));
+	                    utils.inlineFeedback($(this), _('texts.generic.saved'));
 	                });
 				}
 				else {

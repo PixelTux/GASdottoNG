@@ -58,7 +58,7 @@ class Triggers {
             node.css('width', 'auto').prop('disabled', false).empty().append(contents);
 
             if (success == false) {
-                utils.inlineFeedback(node, _('ERRORE!'));
+                utils.inlineFeedback(node, _('texts.generic.error'));
             }
         });
     }

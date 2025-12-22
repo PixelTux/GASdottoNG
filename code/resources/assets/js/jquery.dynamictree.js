@@ -1,5 +1,4 @@
 import utils from "./utils";
-require('jquery-ui/ui/widgets/sortable');
 
 (function ($) {
     $.fn.dynamictree = function() {
@@ -113,7 +112,7 @@ require('jquery-ui/ui/widgets/sortable');
                     serialized: data
                 },
                 success: function() {
-                    utils.inlineFeedback(button, _('Salvato!'));
+                    utils.inlineFeedback(button, _('texts.generic.saved'));
                     box.closest('.modal').modal('hide');
                 }
             });

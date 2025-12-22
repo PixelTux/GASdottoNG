@@ -1,5 +1,4 @@
-require('continous-calendar');
-
+import "continous-calendar";
 import jBob from "jbob";
 import Lists from "./lists";
 
@@ -166,7 +165,7 @@ class Utils {
 
         submit_button.each((index, button) => {
             let btn = $(button);
-            this.inlineFeedback(btn, _('ERRORE!'));
+            this.inlineFeedback(btn, _('texts.generic.error'));
             btn.prop('disabled', true);
         });
     }
@@ -189,7 +188,7 @@ class Utils {
         if (data) {
             if (data.target != '') {
                 Utils.j().submitButton(form).each(function() {
-                    Utils.inlineFeedback($(this), _('ERRORE!'));
+                    Utils.inlineFeedback($(this), _('texts.generic.error'));
                 });
 
                 form.find('.is-invalid').removeClass('is-invalid');

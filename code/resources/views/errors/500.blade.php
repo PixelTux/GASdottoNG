@@ -7,7 +7,7 @@
 
         <title>GASdotto: ERRORE</title>
 
-        <link rel="stylesheet" type="text/css" href="{{ mix('/css/gasdotto.css') }}">
+        @vite(['resources/assets/sass/gasdotto.scss'])
     </head>
     <body>
         <x-larastrap::navbar title="GASdotto" />

@@ -1,11 +1,19 @@
-require('bootstrap-datepicker');
-require('select2');
+import 'bootstrap-datepicker';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.it.js';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.en-US.js';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.de.js';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.fr.js';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.nl.js';
+import 'bootstrap-datepicker/js/locales/bootstrap-datepicker.no.js';
 
-import utils from "./utils";
+import select2 from 'select2';
+import utils from './utils';
 
 class Widgets {
     static init(container)
     {
+        select2();
+
         this.handlingContactSelection(container);
         this.initDatesWidgets(container);
 
@@ -114,7 +122,7 @@ class Widgets {
                 let file = this.files[0].size;
                 if (file > max) {
                     $(this).val('');
-                    utils.setInputErrorText($(this), _('Il file è troppo grande!'));
+                    utils.setInputErrorText($(this), _('texts.generic.attachments.large_file'));
                     return false;
                 }
                 else {
