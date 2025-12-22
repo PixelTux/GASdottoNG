@@ -21,9 +21,11 @@ jobs:
         run: |
           cd code
           composer install --no-interaction --no-progress --prefer-dist
+          npm install
           sudo locale-gen it_IT.UTF-8
           sudo update-locale LANG=it_IT.UTF-8
           cp .env.example .env
           php artisan key:generate
+          npm run build
           php vendor/bin/phpunit
           php vendor/bin/phpstan
