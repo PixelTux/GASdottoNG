@@ -103,5 +103,5 @@ if (empty($all) == false) {
 @endphp
 
 @foreach($actual_groups as $label => $meta)
-	<x-larastrap::radios :name="sprintf('circles_%s', $meta->id)" :label="$label" :options="$meta->options" :help="$meta->help" required />
+	<x-larastrap::radios :name="sprintf('circles_%s', $meta->id)" :label="$label" :options="$meta->options" :help="$meta->help" value="all_by_name" required />
 @endforeach

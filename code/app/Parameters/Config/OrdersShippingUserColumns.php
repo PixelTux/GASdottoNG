@@ -2,8 +2,6 @@
 
 namespace App\Parameters\Config;
 
-use App\Formatters\User;
-
 class OrdersShippingUserColumns extends Config
 {
     public function identifier()
@@ -18,8 +16,6 @@ class OrdersShippingUserColumns extends Config
 
     public function default()
     {
-        [$options, $values] = flaxComplexOptions(User::formattableColumns('shipping'));
-
-        return $values;
+        return ['lastname', 'firstname'];
     }
 }

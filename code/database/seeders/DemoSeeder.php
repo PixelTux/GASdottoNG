@@ -1,5 +1,11 @@
 <?php
 
+/*
+    Reminder: alcuni elementi vengono creati nella demo affinché possano essere
+    rappresentati negli screenshots generati automaticamente con lo script
+    preposto
+*/
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -20,6 +26,7 @@ use App\Measure;
 use App\Category;
 use App\VatRate;
 use App\Modifier;
+use App\Date;
 
 class DemoSeeder extends Seeder
 {
@@ -40,6 +47,17 @@ class DemoSeeder extends Seeder
             'description' => '',
             'group_id' => $group->id,
         ]);
+
+        $mod = new Modifier();
+        $mod->modifier_type_id = 'spese-trasporto';
+        $mod->target()->associate($circle);
+        $mod->value = 'absolute';
+        $mod->arithmetic = 'sum';
+        $mod->scale = 'minor';
+        $mod->applies_type = 'none';
+        $mod->applies_target = 'booking';
+        $mod->definition = '[{"threshold":9223372036854775807,"amount":"3"}]';
+        $mod->save();
 
         $circle = app()->make('CirclesService')->store([
             'name' => 'Da Mario',
@@ -229,5 +247,47 @@ class DemoSeeder extends Seeder
 
             $administrator->addRole($referrer_role, $s);
         }
+
+        $date = new Date();
+        $date->target()->associate(Supplier::where('name', 'La Zucchina Dorata')->first());
+
+        $date->recurring = json_encode([
+            'day' => 'thursday',
+            'cycle' => 'biweekly',
+            'from' => Carbon::today()->format('Y-m-d'),
+            'to' => Carbon::today()->addMonths(2)->format('Y-m-d'),
+        ]);
+
+        $date->description = json_encode([
+            'action' => 'open',
+            'offset1' => '10',
+            'offset2' => '12',
+            'comment' => '',
+            'suspend' => "false",
+        ]);
+
+        $date->type = 'order';
+        $date->save();
+
+        $date = new Date();
+        $date->target()->associate(Supplier::where('name', 'Luigi il Macellaio')->first());
+
+        $date->recurring = json_encode([
+            'day' => 'wednesday',
+            'cycle' => 'month_third',
+            'from' => Carbon::today()->format('Y-m-d'),
+            'to' => Carbon::today()->addMonths(2)->format('Y-m-d'),
+        ]);
+
+        $date->description = json_encode([
+            'action' => 'open',
+            'offset1' => '10',
+            'offset2' => '15',
+            'comment' => '',
+            'suspend' => "false",
+        ]);
+
+        $date->type = 'order';
+        $date->save();
     }
 }
