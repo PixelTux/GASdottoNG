@@ -140,11 +140,19 @@ class MovementsServiceTest extends TestCase
     {
         $this->actingAs($this->userWithAdminPerm);
 
+        $movements = Movement::all();
+        $this->assertEquals(1, $movements->count());
+        $movement = $movements->first();
+        $this->assertEquals($movement->amount * -1, $this->gas->currentBalanceAmount());
+
         app()->make('MovementsService')->update($this->sample_movement->id, [
             'amount' => 50,
         ]);
 
         $this->nextRound();
+
+        $movements = Movement::all();
+        $this->assertEquals(1, $movements->count());
 
         $this->gas = $this->gas->fresh();
         $this->assertEquals(-50, $this->gas->currentBalanceAmount());
