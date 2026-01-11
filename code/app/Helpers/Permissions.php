@@ -13,6 +13,7 @@ function allPermissions()
             'order.view' => __('texts.permissions.permissions.view_orders'),
             'users.self' => __('texts.permissions.permissions.alter_self'),
             'users.selfdestroy' => __('texts.permissions.permissions.delete_account'),
+            'users.destroy' => __('texts.permissions.permissions.delete_accounts'),
             'users.admin' => __('texts.permissions.permissions.admin_users'),
             'users.view' => __('texts.permissions.permissions.view_users'),
             'users.subusers' => __('texts.permissions.permissions.sub_users'),

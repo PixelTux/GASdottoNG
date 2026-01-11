@@ -4,10 +4,9 @@ namespace App\Services;
 
 use App\Exceptions\AuthException;
 use Illuminate\Support\Str;
-
-use Auth;
-use DB;
-use Hash;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 use App\Exceptions\IllegalArgumentException;
 use App\Notifications\ApprovedMessage;
@@ -360,7 +359,10 @@ class UsersService extends BaseService
         $user = $this->show($id);
 
         if ($user->testUserAccess() === false) {
-            $this->ensureAuth(['users.admin' => 'gas']);
+            $this->ensureAuth(['users.destroy' => 'gas']);
+        }
+        else {
+            $this->ensureAuth(['users.selfdestroy' => 'gas']);
         }
 
         if ($user->trashed()) {

@@ -46,6 +46,14 @@ class User extends IconsMap
             ];
         }
 
+        $ret['inbox'] = (object) [
+            'test' => function ($obj) {
+                return $obj->deleted_at != null;
+            },
+            'explicit' => false,
+            'text' => __('texts.user.statuses.deleted'),
+        ];
+
         return $ret;
     }
 

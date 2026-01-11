@@ -89,9 +89,12 @@ trait Iconable
         if (is_null($box) === false) {
             $user = Auth::user();
 
+            $icons = $box->commons($user);
+            $icons = array_filter($icons, fn($i) => isset($i->explicit) == false || $i->explicit);
+
             $ret = array_map(function ($condition) {
                 return $condition->text;
-            }, $box->commons($user));
+            }, $icons);
 
             if ($contents != null) {
                 foreach ($box->selective() as $icon => $condition) {

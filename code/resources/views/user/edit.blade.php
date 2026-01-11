@@ -173,26 +173,43 @@ $groups = $user->eligibleGroups();
             <hr/>
         </x-larastrap::mform>
 
-        @if(!$user->isFriend() && $currentuser->id === $user->id && $currentuser->can('users.selfdestroy'))
-            @php
-            $removeModalId = sprintf('remove-account-%s', sanitizeId($user->id));
-            @endphp
+        @php
+        $removeModalId = sprintf('remove-account-%s', sanitizeId($user->id));
+        @endphp
 
-            <x-larastrap::link color="danger" classes="float-end mt-2" :triggers_modal="$removeModalId" tlabel="user.remove_profile" />
+        @if($currentuser->can('users.destroy') && $currentuser->id !== $user->id)
+            <p class="text-end">
+                <x-larastrap::link color="danger" classes="mt-2" :triggers_modal="$removeModalId" tlabel="user.remove_profile" />
+            </p>
 
             <x-larastrap::modal :id="$removeModalId">
                 <x-larastrap::iform method="DELETE" :action="route('users.destroy', $user->id)" id="user-destroy-modal" :buttons="[['type' => 'submit', 'color' => 'danger', 'tlabel' => 'user.remove_profile']]">
                     <p>{{ __('texts.user.help.remove_profile') }}</p>
-
-                    @if($user->currentBalanceAmount() != 0)
-                        <p>
-                            {{ __('texts.user.help.remove_profile_credit_notice') }}
-                        </p>
-                    @endif
-
                     <input type="hidden" name="pre-saved-function" value="passwordProtected">
+                    <input type="hidden" name="post-saved-function" value="closeAllModals">
+                    <input type="hidden" name="post-saved-function" value="removeTargetListItem">
                 </x-larastrap::iform>
             </x-larastrap::modal>
+        @else
+            @if(!$user->isFriend() && $currentuser->id === $user->id && $currentuser->can('users.selfdestroy'))
+                <p class="text-end">
+                    <x-larastrap::link color="danger" classes="float-end mt-2" :triggers_modal="$removeModalId" tlabel="user.remove_profile" />
+                </p>
+
+                <x-larastrap::modal :id="$removeModalId">
+                    <x-larastrap::iform method="DELETE" :action="route('users.destroy', $user->id)" id="user-destroy-modal" :buttons="[['type' => 'submit', 'color' => 'danger', 'tlabel' => 'user.remove_profile']]">
+                        <p>{{ __('texts.user.help.remove_profile') }}</p>
+
+                        @if($user->currentBalanceAmount() != 0)
+                            <p>
+                                {{ __('texts.user.help.remove_profile_credit_notice') }}
+                            </p>
+                        @endif
+
+                        <input type="hidden" name="pre-saved-function" value="passwordProtected">
+                    </x-larastrap::iform>
+                </x-larastrap::modal>
+            @endif
         @endif
 
         @if($user->isFriend() && $admin_editable)
