@@ -23,11 +23,11 @@ class UsersServiceTest extends TestCase
         parent::setUp();
 
         $this->userWithViewPerm = $this->createRoleAndUser($this->gas, 'users.view,users.subusers');
-        $this->userWithAdminPerm = $this->createRoleAndUser($this->gas, 'users.admin');
+        $this->userWithAdminPerm = $this->createRoleAndUser($this->gas, 'users.admin,users.destroy');
         $this->userWithMovementPerm = $this->createRoleAndUser($this->gas, 'movements.admin');
 
         $this->actingAs($this->userAdmin);
-        $role = \App\Role::factory()->create(['actions' => 'users.self,users.subusers']);
+        $role = \App\Role::factory()->create(['actions' => 'users.self,users.subusers,users.selfdestroy']);
         app()->make('RolesService')->setMasterRole($this->gas, 'user', $role->id);
         $this->userWithBasePerm = User::factory()->create(['gas_id' => $this->gas->id]);
         $this->userWithBasePerm->addRole($role->id, $this->gas);
@@ -613,5 +613,22 @@ class UsersServiceTest extends TestCase
         catch (ModelNotFoundException $e) {
             // good boy
         }
+    }
+
+    /*
+        Auto Cancellazione Utente
+    */
+    public function test_self_destroy()
+    {
+        $this->actingAs($this->userWithBasePerm);
+        app()->make('UsersService')->destroy($this->userWithBasePerm->id);
+        $user = User::find($this->userWithBasePerm->id);
+        $this->assertNull($user);
+
+        $this->actingAs($this->userWithAdminPerm);
+        $user = app()->make('UsersService')->show($this->userWithBasePerm->id);
+        $this->assertNotNull($user);
+        $this->assertNotEquals($this->userWithBasePerm->firstname, $user->firstname);
+        $this->assertNotNull($user->deleted_at);
     }
 }

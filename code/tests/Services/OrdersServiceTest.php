@@ -700,14 +700,13 @@ class OrdersServiceTest extends TestCase
     */
     public function test_pending()
     {
-        $product = $this->order->products->random();
+        $booking = $this->initMailableOrder();
+        $product = $booking->products->random()->product;
         $product->package_size = 10;
         $product->save();
 
         $this->order->keep_open_packages = 'each';
         $this->order->save();
-
-        $booking = $this->initMailableOrder();
 
         $this->nextRound();
 

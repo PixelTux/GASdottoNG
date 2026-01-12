@@ -9,6 +9,15 @@ use App\Exceptions\AuthException;
 
 class BaseService
 {
+    protected function trackRequest(array $request, array $required)
+    {
+        foreach($required as $req) {
+            if (isset($request[$req]) == false) {
+                \Log::debug('Manca parametro ' . $req . ' da richiesta: ' . print_r($request, true));
+            }
+        }
+    }
+
     public function ensureAuth($permissions = [], $or = true)
     {
         $user = Auth::user();

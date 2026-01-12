@@ -38,6 +38,8 @@ class OrdersService extends BaseService
 
     public function store(array $request)
     {
+        $this->trackRequest($request, ['supplier', 'status']);
+
         DB::beginTransaction();
 
         $a = new Aggregate();
