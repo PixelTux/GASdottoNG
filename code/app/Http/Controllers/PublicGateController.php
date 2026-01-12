@@ -16,6 +16,7 @@ class PublicGateController extends Controller
 
             switch($req->t) {
                 case 'odoc':
+                case 'order_documents':
                     $order_id = $req->p->id;
                     $order = Order::find($order_id);
 
@@ -33,8 +34,8 @@ class PublicGateController extends Controller
 
                             foreach($types as $t) {
                                 $base_filename = __('texts.orders.files.order.' . $t);
-                                $links[$base_filename . ' - CSV'] = publicGateGetLink('order_documents', $t . '_csv', ['id' => $order->id]);
-                                $links[$base_filename . ' - PDF'] = publicGateGetLink('order_documents', $t . '_pdf', ['id' => $order->id]);
+                                $links[$base_filename . ' - CSV'] = publicGateGetLink('odoc', $t . '_csv', ['id' => $order->id]);
+                                $links[$base_filename . ' - PDF'] = publicGateGetLink('odoc', $t . '_pdf', ['id' => $order->id]);
                             }
 
                             return view('public.order_documents', [
