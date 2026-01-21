@@ -32,6 +32,7 @@ class ClosedOrdersNotification extends ManyMailNotification
         $message->subject(__('texts.mail.closed.defaults.subject'))->view('emails.closedorder', ['orders' => $this->orders]);
 
         foreach ($this->files as $file) {
+            \Log::debug('Allego file ' . $file . ' a notifica chiusura ordine');
             $message->attach($file);
         }
 

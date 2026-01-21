@@ -22,6 +22,7 @@ class DeleteFiles implements ShouldQueue
     public function handle()
     {
         foreach ($this->files as $file) {
+            \Log::debug('Elimino file temporaneo ' . $file);
             @unlink($file);
         }
     }
