@@ -362,7 +362,16 @@ class UsersService extends BaseService
             $this->ensureAuth(['users.destroy' => 'gas']);
         }
         else {
-            $this->ensureAuth(['users.selfdestroy' => 'gas']);
+            /*
+                Se l'utente da rimuovere è un amico, lo posso eliminare senza
+                nessun permesso particolare.
+                Altrimenti, se l'utente da rimuovere è l'utente stesso che ha
+                fatto la richiesta, mi accerto che abbia il relativo permesso di
+                autodistruzione
+            */
+            if ($user->isFriend() == false) {
+                $this->ensureAuth(['users.selfdestroy' => 'gas']);
+            }
         }
 
         if ($user->trashed()) {
