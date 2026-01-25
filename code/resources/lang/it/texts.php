@@ -1539,5 +1539,12 @@ In futuro potrai accedere usando quest\'altro link, lo username "%[username]" e 
     ),
     'remove_profile' => 'Elimina profilo',
     'assign_aggregations' => 'Assegna Aggregazioni',
+    'errors' =>
+    array(
+      'username_exists' => 'Username già assegnato',
+      'username_exists_trashed' => 'Username già assegnato (ad un utente attualmente cessato)',
+      'name_exists' => 'Nome e cognome già presenti',
+      'name_exists_trashed' => 'Nome e cognome già presenti (assegnati un utente attualmente cessato)',
+    ),
   ),
 );

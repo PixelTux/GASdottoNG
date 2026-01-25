@@ -17,7 +17,14 @@ class UserObserver
         */
         $test = User::withTrashed()->withoutGlobalScopes()->where('id', '!=', $user->id)->where('username', $user->username)->first();
         if ($test != null) {
-            throw new IllegalArgumentException('Username già assegnato', 'username');
+            if ($test->trashed()) {
+                $message = __('texts.user.errors.username_exists_trashed');
+            }
+            else {
+                $message = __('texts.user.errors.username_exists');
+            }
+
+            throw new IllegalArgumentException($message, 'username');
         }
     }
 
@@ -26,7 +33,14 @@ class UserObserver
         if (filled($user->firstname) && filled($user->lastname)) {
             $test = User::where('id', '!=', $user->id)->where('firstname', $user->firstname)->where('lastname', $user->lastname)->first();
             if ($test != null) {
-                throw new IllegalArgumentException('Nome e cognome già presenti', 'lastname');
+                if ($test->trashed()) {
+                    $message = __('texts.user.errors.name_exists_trashed');
+                }
+                else {
+                    $message = __('texts.user.errors.name_exists');
+                }
+
+                throw new IllegalArgumentException($message, 'lastname');
             }
         }
     }

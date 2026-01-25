@@ -564,6 +564,11 @@ i[class^='bi-hidden-'] {
     color: #0dcaf0;
 }
 
+.error-message {
+    color: $danger;
+    font-size: 1rem;
+}
+
 /*
     Per gestire il feedback che appare accanto alle checkbox che salvano
     immediatamente la selezione sul server
