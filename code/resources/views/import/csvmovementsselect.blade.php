@@ -23,7 +23,7 @@ $suppliers = App\Supplier::orderBy('name', 'asc')->get();
 
 @endphp
 
-<x-larastrap::modal size="fullscreen">
+<x-larastrap::modal classes="close-on-submit" size="fullscreen">
     <input type="hidden" name="matching_methods_for_movement_types" value='{!! json_encode($methods) !!}'>
 
     <div class="wizard_page">

@@ -14,7 +14,7 @@ if (!isset($extra_description)) {
 
 @endphp
 
-<x-larastrap::modal>
+<x-larastrap::modal classes="close-on-submit">
     <div class="wizard_page">
         <x-larastrap::wizardform :id="sprintf('form-%s', Illuminate\Support\Str::random(20))" :action="url('import/csv?type=' . $type . '&step=' . $next_step)">
             <input type="hidden" class="wizard_field" name="path" value="{{ $path }}" />
@@ -28,6 +28,10 @@ if (!isset($extra_description)) {
             @foreach($extra_description as $ed)
                 <p>{{ $ed }}</p>
             @endforeach
+
+            <hr/>
+
+            <x-larastrap::check name="skip_header" label="Ignora la prima riga in fase di importazione" :checked="$skip_header" inline do_label="hide" />
 
             <hr/>
 

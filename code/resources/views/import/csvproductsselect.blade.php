@@ -6,7 +6,7 @@ $vat_rates = App\VatRate::orderBy('percentage', 'asc')->get();
 
 @endphp
 
-<x-larastrap::modal size="fullscreen">
+<x-larastrap::modal classes="close-on-submit" size="fullscreen">
     <div class="wizard_page">
         @if(!empty($errors))
             <div class="alert alert-danger">

@@ -2,10 +2,12 @@
 
 namespace App\Importers\CSV;
 
-use Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Str;
 use League\Csv\Reader;
+use League\Csv\Info;
 
 use App\Exceptions\MissingFieldException;
 
@@ -28,42 +30,36 @@ abstract class CSVImporter
         return new $classname();
     }
 
-    private function guessCsvFileSeparator($path)
+    private function startReader(Request $request, string $path)
     {
-        $contents = fopen($path, 'r');
-        if ($contents === false) {
-            return null;
+        $reader = Reader::from($path, 'r');
+        $options = Info::getDelimiterStats($reader, [',', ';', "\t"]);
+        arsort($options);
+        $target_separator = array_keys($options)[0];
+        $reader->setDelimiter($target_separator);
+
+        $skip = $request->has('skip_header');
+        if ($skip) {
+            $reader->setHeaderOffset(0);
         }
 
-        $separators = [',', ';', "\t"];
-        $lenghts = [0, 0, 0];
-
-        foreach ($separators as $sep_index => $sep) {
-            $row = fgetcsv($contents, 0, $sep);
-            $lenghts[$sep_index] = count($row);
-            rewind($contents);
-        }
-
-        $target_separator = $separators[array_search(max($lenghts), $lenghts)] ?? null;
-        if (is_null($target_separator)) {
-            throw new \InvalidArgumentException('Impossibile interpretare il file');
-        }
-
-        return $target_separator;
+        $reader->skipEmptyRecords();
+        return $reader;
     }
 
-    /*
-        Se la sotto-classe specifica un attributo "sorted_fields" tra i
-        parametri, pre-popolo l'array dei campi selezionati in fase di revisione
-        del CSV. Questo viene usato, ad esempio, dall'importer "Products" per
-        inizializzare l'importazione dei prodotti di un certo fornitore usando
-        sempre le stesse colonne (anziché doverle riassegnare a mano ogni volta)
-    */
-    private function retrievePreSelectedFields($parameters)
+    private function retrievePreSelectedFields(&$parameters)
     {
         $selected = [];
 
-        if (isset($parameters['sorted_fields']) && empty($parameters['sorted_fields']) === false) {
+        /*
+            Se la sotto-classe specifica un attributo "sorted_fields" tra i
+            parametri, pre-popolo l'array dei campi selezionati in fase di
+            revisione del CSV. Questo viene usato, ad esempio, dall'importer
+            "Products" per inizializzare l'importazione dei prodotti di un certo
+            fornitore usando sempre le stesse colonne (anziché doverle
+            riassegnare a mano ogni volta)
+        */
+        if (isset($parameters['sorted_fields']) && !empty($parameters['sorted_fields'])) {
             $sorted = $parameters['sorted_fields'];
             $fields = $this->fields();
 
@@ -83,11 +79,40 @@ abstract class CSVImporter
             }
         }
         else {
+            /*
+                Qui cerco di auto-assegnare le colonne in funzione
+                dell'intestazione nella prima riga del CSV. Se funziona, devo
+                badare a non considerare la prima riga (perché, appunto,
+                contiene una intestazione e non dei dati da importare)
+            */
+            $mapped_cols = 0;
+
             foreach ($parameters['columns'] as $c) {
-                $selected[] = (object) [
-                    'label' => __('texts.imports.ignore_slot'),
-                    'name' => 'none',
-                ];
+                $found = false;
+
+                foreach ($parameters['sorting_fields'] as $sf => $sf_meta) {
+                    if ($sf_meta->label == $c) {
+                        $selected[] = (object) [
+                            'label' => $c,
+                            'name' => $sf,
+                        ];
+
+                        $mapped_cols++;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if ($found == false) {
+                    $selected[] = (object) [
+                        'label' => __('texts.imports.ignore_slot'),
+                        'name' => 'none',
+                    ];
+                }
+            }
+
+            if ($mapped_cols > count($parameters['columns']) / 2) {
+                $parameters['skip_header'] = true;
             }
         }
 
@@ -102,17 +127,17 @@ abstract class CSVImporter
                 throw new \InvalidArgumentException('File non caricato correttamente, possibili problemi con la dimensione');
             }
 
+            $parameters = array_merge($parameters, [
+                'skip_header' => false,
+            ]);
+
             $filepath = sys_get_temp_dir();
             $filename = $f->getClientOriginalName();
             $f->move($filepath, $filename);
             $path = $filepath . '/' . $filename;
 
-            $target_separator = $this->guessCsvFileSeparator($path);
-            $this->reader = Reader::createFromPath($path, 'r');
-            $this->reader->setDelimiter($target_separator);
-
+            $this->reader = $this->startReader($request, $path);
             $parameters['path'] = $path;
-
             $sample_line = '';
 
             foreach ($this->reader->getRecords() as $line) {
@@ -177,9 +202,7 @@ abstract class CSVImporter
             }
         }
 
-        $target_separator = $this->guessCsvFileSeparator($path);
-        $this->reader = Reader::createFromPath($path, 'r');
-        $this->reader->setDelimiter($target_separator);
+        $this->reader = $this->startReader($request, $path);
 
         return $columns;
     }
@@ -199,9 +222,17 @@ abstract class CSVImporter
         */
         $ret = array_filter($ret, function ($row) {
             $test = array_filter($row, fn ($v) => ! empty($v));
-
             return ! empty($test);
         });
+
+        /*
+            Per ogni riga, elimino le chiavi dell'array e lascio solo gli indici
+            numerici.
+            Questo perché se è stato definito un header (in startReader()) mi
+            troverei appunto le intestazioni come chiavi dell'array, e questo
+            renderebbe un po' più complicato maneggiarlo successivamente
+        */
+        $ret = array_map(fn ($row) => array_values($row), $ret);
 
         return $ret;
     }

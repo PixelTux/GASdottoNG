@@ -102,6 +102,35 @@ class Products extends CSVImporter
         }
     }
 
+    private function findExistingProduct($line, $products, $params)
+    {
+        foreach($params as $name => $index) {
+            if ($index != -1 && filled($line[$index])) {
+                $test = $products->firstWhereAbout($name, $line[$index]);
+                if ($test) {
+                    return $test;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function fixCalculatedPrice($p, $package_price, $price_without_vat, $vat_rate)
+    {
+        $price = $p->price;
+
+        if (! empty($package_price) && ! empty($p->package_size) && empty($p->price)) {
+            $price = $package_price / $p->package_size;
+        }
+
+        if (! empty($price_without_vat) && ! empty($vat_rate)) {
+            $price = $price_without_vat + (($price_without_vat * $vat_rate) / 100);
+        }
+
+        return $price;
+    }
+
     public function select($request)
     {
         $columns = $this->initRead($request);
@@ -115,22 +144,15 @@ class Products extends CSVImporter
         $all_vatrates = VatRate::all();
 
         foreach ($this->getRecords() as $line) {
-            if (empty($line) || (count($line) == 1 && empty($line[0]))) {
-                continue;
-            }
-
             try {
-                $test = null;
+                $test = $this->findExistingProduct($line, $all_products, [
+                    'supplier_code' => $supplier_code_index,
+                    'name' => $name_index,
+                ]);
 
-                if ($supplier_code_index != -1 && filled($line[$supplier_code_index])) {
-                    $test = $all_products->firstWhereAbout('supplier_code', $line[$supplier_code_index]);
-                }
-
-                if (is_null($test)) {
-                    if ($name_index != -1 && filled($line[$name_index])) {
-                        $test = $all_products->firstWhereAbout('name', $line[$name_index]);
-                    }
-                }
+                $price_without_vat = null;
+                $vat_rate = null;
+                $package_price = null;
 
                 if ($test != null) {
                     $p = $test;
@@ -146,9 +168,6 @@ class Products extends CSVImporter
                     $p->package_size = 0;
                     $p->portion_quantity = 0;
                     $p->want_replace = null;
-                    $price_without_vat = null;
-                    $vat_rate = null;
-                    $package_price = null;
                 }
 
                 foreach ($columns as $index => $field) {
@@ -167,7 +186,6 @@ class Products extends CSVImporter
                         $value = guessDecimal($value);
                         if ($value == 0) {
                             $p->vat_rate_id = 0;
-
                             continue;
                         }
                         else {
@@ -192,13 +210,7 @@ class Products extends CSVImporter
                     }
                 }
 
-                if (! empty($package_price) && ! empty($p->package_size) && empty($p->price)) {
-                    $p->price = $package_price / $p->package_size;
-                }
-
-                if (! empty($price_without_vat) && ! empty($vat_rate)) {
-                    $p->price = $price_without_vat + (($price_without_vat * $vat_rate) / 100);
-                }
+                $p->price = $this->fixCalculatedPrice($p, $package_price, $price_without_vat, $vat_rate);
 
                 $products[] = $p;
             }
