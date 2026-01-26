@@ -238,6 +238,24 @@ class ImportersTest extends TestCase
         Notification::assertCount(2);
     }
 
+    public function test_users_csv_with_header()
+    {
+        $this->actingAs($this->userAdmin);
+
+        $path = base_path('tests/data/users2.csv');
+        $importer = \App\Importers\CSV\CSVImporter::getImporter('users');
+
+        $request = new \Illuminate\Http\Request();
+        $request->merge([
+            'path' => $path,
+            'column' => ['firstname', 'lastname', 'username', 'password', 'email', 'phone'],
+            'skip_headers' => true,
+        ]);
+
+        $response = $importer->run($request);
+        $this->assertEquals(3, count($response['objects']));
+    }
+
     public function test_movements_csv()
     {
         $this->actingAs($this->userAdmin);
