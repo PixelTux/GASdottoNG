@@ -83,7 +83,7 @@ class ModifiersServiceTest extends TestCase
                 }
             }
 
-            if ($found == false) {
+            if (!$found) {
                 $data[$product_id] = $missing_quantity;
             }
 
@@ -464,7 +464,7 @@ class ModifiersServiceTest extends TestCase
         $this->assertTrue($exists);
     }
 
-    private function reviewBookingsIntoOrder($mod, $test_shipping_value)
+    private function reviewBookingsIntoOrder($test_shipping_value)
     {
         $this->nextRound();
 
@@ -575,14 +575,14 @@ class ModifiersServiceTest extends TestCase
         $mod = $this->simpleMod($this->order, 'order', 'price', $test_shipping_value);
         $this->assertNotNull($mod);
 
-        $this->reviewBookingsIntoOrder($mod, $test_shipping_value);
+        $this->reviewBookingsIntoOrder($test_shipping_value);
 
         $this->shipOrder(false);
 
         $this->order->status = 'shipped';
         $this->order->save();
 
-        $this->reviewBookingsIntoOrder($mod, $test_shipping_value);
+        $this->reviewBookingsIntoOrder($test_shipping_value);
 
         /*
             Alterando le quantità consegnate e forzando il ricalcolo dei
@@ -592,7 +592,7 @@ class ModifiersServiceTest extends TestCase
         $this->shipOrder(true);
         $this->actingAs($this->userReferrer);
         app()->make('OrdersService')->fixModifiers($this->order->id, 'adjust');
-        $this->reviewBookingsIntoOrder($mod, $test_shipping_value);
+        $this->reviewBookingsIntoOrder($test_shipping_value);
     }
 
     /*
@@ -848,7 +848,7 @@ class ModifiersServiceTest extends TestCase
                     }
                 }
             }
-            while ($added == false);
+            while (!$added);
         }
         else {
             if ($booking) {
@@ -920,7 +920,7 @@ class ModifiersServiceTest extends TestCase
                 }
             }
 
-            if ($found == false) {
+            if (!$found) {
                 $this->assertEquals($mods->count(), 0);
             }
         }
@@ -929,7 +929,7 @@ class ModifiersServiceTest extends TestCase
     /*
         Prenotazione di un amico insieme alla prenotazione dell'utente padre
     */
-    private function test_with_friend($overlap)
+    private function testWithFriend($overlap)
     {
         $this->localInitOrder();
 
@@ -1029,12 +1029,12 @@ class ModifiersServiceTest extends TestCase
 
     public function test_with_friend_overlap()
     {
-        $this->test_with_friend(true);
+        $this->testWithFriend(true);
     }
 
     public function test_with_friend_no_overlap()
     {
-        $this->test_with_friend(false);
+        $this->testWithFriend(false);
     }
 
     /*
@@ -1076,7 +1076,7 @@ class ModifiersServiceTest extends TestCase
                 $actual_mods = [];
 
                 foreach ($mods as $mod) {
-                    if (isset($actual_mods[$mod->modifier->modifierType->name]) == false) {
+                    if (!isset($actual_mods[$mod->modifier->modifierType->name])) {
                         $actual_mods[$mod->modifier->modifierType->name] = 0;
                     }
 

@@ -82,7 +82,7 @@ abstract class TestCase extends BaseTestCase
     */
     protected function createFriend($master)
     {
-        if ($master->can('users.subusers') == false) {
+        if (!$master->can('users.subusers')) {
             $friends_role = \App\Role::factory()->create(['actions' => 'users.subusers']);
             $master->addRole($friends_role->id, $this->gas);
         }
@@ -244,7 +244,7 @@ abstract class TestCase extends BaseTestCase
         $data = [];
 
         foreach ($master as $product => $quantity) {
-            if (is_numeric($quantity) == false) {
+            if (!is_numeric($quantity)) {
                 continue;
             }
 
@@ -256,7 +256,7 @@ abstract class TestCase extends BaseTestCase
         }
 
         foreach ($friend as $product => $quantity) {
-            if (isset($data[$product]) == false) {
+            if (!isset($data[$product])) {
                 $data[$product] = $quantity;
             }
         }

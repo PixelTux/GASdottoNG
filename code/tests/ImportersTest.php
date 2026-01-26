@@ -210,7 +210,6 @@ class ImportersTest extends TestCase
 
         Notification::fake();
 
-        $data = [];
         $path = base_path('tests/data/users.csv');
 
         $importer = \App\Importers\CSV\CSVImporter::getImporter('users');
@@ -260,7 +259,6 @@ class ImportersTest extends TestCase
     {
         $this->actingAs($this->userAdmin);
 
-        $data = [];
         $path = base_path('tests/data/movements.csv');
 
         User::factory()->create([
@@ -291,7 +289,6 @@ class ImportersTest extends TestCase
         ]);
 
         $data = $importer->select($request);
-
         $this->assertEquals(4, count($data['movements']));
         $this->assertEquals(0, count($data['errors']));
     }

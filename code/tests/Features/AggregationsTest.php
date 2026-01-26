@@ -57,7 +57,7 @@ class AggregationsTest extends TestCase
         $this->assertEquals(1, $this->userAdmin->circles()->count());
     }
 
-    private function attachModifier($circle, $amount)
+    private function attachModifier($circle)
     {
         $this->actingAs($this->userAdmin);
 
@@ -109,7 +109,7 @@ class AggregationsTest extends TestCase
         ]);
 
         $right_circle = $group->circles()->where('is_default', false)->first();
-        $wrong_circle = $group->circles()->where('circles.id', '!=', $right_circle->id)->first();
+        $group->circles()->where('circles.id', '!=', $right_circle->id)->first();
 
         $order = $this->initOrder(null);
         $this->populateOrder($order);
@@ -120,7 +120,7 @@ class AggregationsTest extends TestCase
         $target_user->circles()->sync([$right_circle->id]);
 
         $test_shipping_value = 10;
-        $mod = $this->attachModifier($right_circle, $test_shipping_value);
+        $mod = $this->attachModifier($right_circle);
 
         $order = app()->make('OrdersService')->show($order->id);
         $redux = $order->aggregate->reduxData();
@@ -180,7 +180,7 @@ class AggregationsTest extends TestCase
         }
 
         $test_shipping_value = 10;
-        $mod = $this->attachModifier($right_circle, $test_shipping_value);
+        $mod = $this->attachModifier($right_circle);
 
         $this->nextRound();
 
@@ -193,7 +193,7 @@ class AggregationsTest extends TestCase
         foreach ($order->bookings as $booking) {
             $mods = $booking->applyModifiers($redux, true);
 
-            if (in_array($booking->id, $target_bookings) == false) {
+            if (!in_array($booking->id, $target_bookings)) {
                 $this->assertEquals($mods->count(), 0);
                 $unchecked = true;
             }
